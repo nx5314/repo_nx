@@ -10,7 +10,7 @@ if "%minecraftfolder%"=="" set "minecraftfolder=%appdata%\.minecraft" >nul
 echo.
 
 :: Fetch the URL for the download
-for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/minecoloniesplusupdate.txt') do set "modpackurl=%%i"
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/MinecoloniesPlus/minecoloniesplusupdate.txt') do set "modpackurl=%%i"
 
 echo Downloading mods
 curl -L "%modpackurl%" --output "%temp%\minecoloniesplusmodpack.zip"
