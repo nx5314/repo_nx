@@ -1,26 +1,26 @@
 @echo off
+TITLE AU2SB Updater 1.0.0
 setlocal
+:: Set the current version of the script
 set "this_updater_version=1.0.0"
 :: Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
+set "updater_download_path=%cd%"
 :: Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
     echo Your updater is out of date. The latest version is %latest_updater_version%.
-    echo Please enter the directory where you want to save the new updater,
-    set /p "user_download_path=or press Enter to use the current directory: "
-    :: If the user enters nothing, set user_download_path to the current directory
-    if "%user_download_path%"=="" set "user_download_path=%cd%" >nul
+    echo The new updater will be saved in the same folder as the existing updater
+	echo.
+    echo Run %updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat once it is downloaded
     echo.
     echo Downloading the latest updater...
-    curl -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%user_download_path%\AU2SB_Updater_%latest_updater_version%.bat"
+    curl -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat"
     echo.
-    echo The latest updater has been downloaded to %user_download_path%\AU2SB_Updater_%latest_updater_version%.bat.
-    echo Please run the new updater.
+	%updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat
     echo.
-    pause
-    exit /b
+	pause
+	exit /b
 )
-
 :: Prompt the user for the Minecraft folder path
 echo This installer/updater script will automatically download the required mods and config files. 
 echo Fabric will be installed automatically if it is not already installed. (Requires Java)
@@ -36,7 +36,7 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/resourcepacks.txt') do set "resourcepacks_url=%%i"
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/extras.txt') do set "extras_url=%%i"
 
-echo Downloading mods
+echo Downloading modpack...
 if exist "%temp%\au2sb" rmdir "%temp%\au2sb" /s /q 2>&1 >nul
 mkdir "%temp%\au2sb" 2>&1 >nul
 curl -L "%mods_url%" --output "%temp%\au2sb_mods.zip"
