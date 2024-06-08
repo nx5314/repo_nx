@@ -1,5 +1,5 @@
 @echo off
-TITLE AU2SB Updater 1.0.0
+title AU2SB Updater 1.0.0
 setlocal
 :: Set the current version of the script
 set "this_updater_version=1.0.0"
@@ -8,15 +8,14 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 set "updater_download_path=%cd%"
 :: Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
-    echo Your updater is out of date. The latest version is %latest_updater_version%.
-    echo The new updater will be saved in the same folder as the existing updater
-	echo.
-    echo Run %updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat once it is downloaded
-    echo.
-    echo Downloading the latest updater...
-    curl -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat"
-    echo.
-	%updater_download_path%\AU2SB_Updater_%latest_updater_version%.bat
+	rename AU2SB_Updater.bat AU2SB_Updater_old.bat
+    curl -s -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater.bat"
+    echo AU2SB Updater has been updated to %latest_updater_version%
+    title AU2SB Updater %latest_updater_version%
+    :: Delete the old updater
+    del %updater_download_path%\AU2SB_Updater_old.bat /q 2>nul
+    :: Run the new updater
+    %updater_download_path%\AU2SB_Updater.bat
     echo.
 	pause
 	exit /b
