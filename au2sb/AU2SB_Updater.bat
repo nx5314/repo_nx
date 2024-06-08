@@ -35,6 +35,29 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/resourcepacks.txt') do set "resourcepacks_url=%%i"
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/extras.txt') do set "extras_url=%%i"
 
+:: Check if AU2SB_mods_version.txt exists, if not, create it and set its contents to the value of %mods_url%
+REM if not exist "%minecraftfolder%\AU2SB_mods_version.txt" (
+    REM echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
+	REM :: attrib +h "%minecraftfolder%\AU2SB_mods_version.txt"
+REM )
+
+:: Check if the mods_url is the same as the one saved in AU2SB_mods_version.txt
+REM set mods_uptodate=false
+REM if exist "%minecraftfolder%\AU2SB_mods_version.txt" (
+    REM set /p saved_mods_url=<"%minecraftfolder%\AU2SB_mods_version.txt"
+    REM if "%mods_url%"=="%saved_mods_url%" (
+        REM echo The mods appear to already be up-to-date.
+	    REM set "mods_uptodate=true"
+	    REM set /p "mods_force=Do you want to force a redownload? y/n"
+	    REM if "%mods_force%"=="y" (
+		    REM set "mods_uptodate=false"
+	    REM )
+    REM )
+REM )
+
+:: Save the mods_url in AU2SB_mods_version.txt
+REM echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
+
 echo Starting modpack update...
 if exist "%temp%\au2sb" rmdir "%temp%\au2sb" /s /q 2>&1 >nul
 mkdir "%temp%\au2sb" 2>&1 >nul
