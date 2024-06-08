@@ -35,53 +35,70 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/resourcepacks.txt') do set "resourcepacks_url=%%i"
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/extras.txt') do set "extras_url=%%i"
 
-:: Check if AU2SB_mods_version.txt exists, if not, create it and set its contents to the value of %mods_url%
-REM if not exist "%minecraftfolder%\AU2SB_mods_version.txt" (
-    REM echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
-	REM :: attrib +h "%minecraftfolder%\AU2SB_mods_version.txt"
-REM )
+:: Check if AU2SB_mods_version.txt exists
+set "mods_uptodate=false"
+if exist "%minecraftfolder%\AU2SB_mods_version.txt" (
+    :: Read the contents of the file
+    set /p "current_mods_url=<%minecraftfolder%\AU2SB_mods_version.txt"
+    :: Compare the contents of the file with mods_url
+    if "%current_mods_url%"=="%mods_url%" (
+        :: If they are the same, set mods_uptodate to true
+        set "mods_uptodate=true"
+    ) else (
+        :: If they are not the same, update the file with the new mods_url
+        echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
+    )
+) else (
+    :: If the file does not exist, create it and set the contents to mods_url
+    echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
+)
 
-:: Check if the mods_url is the same as the one saved in AU2SB_mods_version.txt
-REM set mods_uptodate=false
-REM if exist "%minecraftfolder%\AU2SB_mods_version.txt" (
-    REM set /p saved_mods_url=<"%minecraftfolder%\AU2SB_mods_version.txt"
-    REM if "%mods_url%"=="%saved_mods_url%" (
-        REM echo The mods appear to already be up-to-date.
-	    REM set "mods_uptodate=true"
-	    REM set /p "mods_force=Do you want to force a redownload? y/n"
-	    REM if "%mods_force%"=="y" (
-		    REM set "mods_uptodate=false"
-	    REM )
-    REM )
-REM )
+:: If mods are up to date offer for user override
+if "%mods_uptodate%"=="true" (
+    :: Prompt the user to override mods_uptodate
+    set /p "user_input=Mods are up to date. Do you want to override and update anyway (y/n)? "
+    :: Convert the user input to lowercase
+    for /f "delims=" %%i in ('echo %user_input%') do set "user_input=%%~Li"
+    :: If the user input is 'y' or 'yes', set mods_uptodate to false
+    if "%user_input%"=="y" set "mods_uptodate=false"
+    if "%user_input%"=="yes" set "mods_uptodate=false"
+)
 
-:: Save the mods_url in AU2SB_mods_version.txt
-REM echo %mods_url% > "%minecraftfolder%\AU2SB_mods_version.txt"
+:: Download, extract, and move mods if mods_uptodate is not true
+if "%mods_uptodate%"=="false" (
+    echo Downloading mods...
+    curl -L "%mods_url%" --output "%temp%\au2sb_mods.zip"
+    echo Extracting mods...
+    tar -xf "%temp%\au2sb_mods.zip" -C "%temp%\au2sb" 2>&1 >nul
+    echo Moving mods to %minecraftfolder%...
+    robocopy "%temp%\au2sb\mods" "%minecraftfolder%\mods" /s /purge /r:100 /move /log:"%temp%\au2sb_mods.log" 2>&1 >nul
+)
 
-echo Starting modpack update...
-if exist "%temp%\au2sb" rmdir "%temp%\au2sb" /s /q 2>&1 >nul
-mkdir "%temp%\au2sb" 2>&1 >nul
-echo Downloading mods...
-curl -L "%mods_url%" --output "%temp%\au2sb_mods.zip"
+:: Download, extract, and move config
 echo Downloading config...
 curl -L "%config_url%" --output "%temp%\au2sb_config.zip"
-echo Downloading resourcepacks...
-curl -L "%resourcepacks_url%" --output "%temp%\au2sb_resourcepacks.zip"
-echo Downloading extras...
-curl -L "%extras_url%" --output "%temp%\au2sb_extras.zip"
-echo Extracting mods...
-tar -xf "%temp%\au2sb_mods.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Extracting config...
 tar -xf "%temp%\au2sb_config.zip" -C "%temp%\au2sb" 2>&1 >nul
+echo Moving config to %minecraftfolder%...
+robocopy "%temp%\au2sb\config" "%minecraftfolder%\config" /s /r:100 /move /log:"%temp%\au2sb_config.log" 2>&1 >nul
+
+:: Download, extract, and move resourcepacks
+echo Downloading resourcepacks...
+curl -L "%resourcepacks_url%" --output "%temp%\au2sb_resourcepacks.zip"
 echo Extracting resourcepacks...
 tar -xf "%temp%\au2sb_resourcepacks.zip" -C "%temp%\au2sb" 2>&1 >nul
+echo Moving resourcepacks to %minecraftfolder%...
+robocopy "%temp%\au2sb\resourcepacks" "%minecraftfolder%\resourcepacks" /s /r:100 /move /log:"%temp%\au2sb_resourcepacks.log" 2>&1 >nul
+
+:: Download, extract, and move extras
+echo Downloading extras...
+curl -L "%extras_url%" --output "%temp%\au2sb_extras.zip"
 echo Extracting extras...
 tar -xf "%temp%\au2sb_extras.zip" -C "%temp%\au2sb" 2>&1 >nul
-echo Moving files to %minecraftfolder%...
-robocopy "%temp%\au2sb\mods" "%minecraftfolder%\mods" /s /purge /r:100 /move /log:"%temp%\au2sb_mods.log" 2>&1 >nul
-robocopy "%temp%\au2sb\config" "%minecraftfolder%\config" /s /r:100 /move /log:"%temp%\au2sb_config.log" 2>&1 >nul
-robocopy "%temp%\au2sb\resourcepacks" "%minecraftfolder%\resourcepacks" /s /r:100 /move /log:"%temp%\au2sb_resourcepacks.log" 2>&1 >nul
+echo Moving extras to %minecraftfolder%...
 robocopy "%temp%\au2sb" "%minecraftfolder%" /s /r:100 /move /log:"%temp%\au2sb_extras.log" 2>&1 >nul
+
+:: Delete the zips
 echo Cleaning up leftovers...
 del "%temp%\au2sb_mods.zip" /q 2>&1 >nul
 del "%temp%\au2sb_config.zip" /q 2>&1 >nul
