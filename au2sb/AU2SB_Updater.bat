@@ -78,7 +78,8 @@ if "!current_mods_url!"=="!mods_url!" (
 REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
-    set /p "user_input=Mods are up to date. Do you want to override and update anyway ([y]es = redownload mods / no = config only)? [Enter=skip]"
+    echo Your mods appear to be up-to-date.
+    set /p "user_input=Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
 )
 REM If the user input is 'y' or 'yes', set mods_uptodate to false
 if /I "%user_input%"=="y" (
