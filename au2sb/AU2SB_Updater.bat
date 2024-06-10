@@ -157,6 +157,8 @@ if "!is_update!"=="true" (
     echo Modpack installed
 )
 echo.
+echo Be sure to launch your game with a profile set to fabric-loader-1.20.1
+echo.
 echo If there were any errors please let me know
 endlocal
 pause
