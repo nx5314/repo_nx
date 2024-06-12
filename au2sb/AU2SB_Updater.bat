@@ -23,11 +23,13 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 REM Prompt the user for the Minecraft folder path
 echo        This installer/updater script will automatically download the required mods and config files. 
 echo.
-echo        Fabric will be installed automatically if it is not already installed. (Requires Java)
+echo        An AU2SB profile will be created in the Minecraft launcher.
+echo        Fabric will be installed automatically if it is not already installed. (requires java)
 echo.
 echo        Please enter the folder path if you are using a custom Minecraft folder location, or
-echo        press Enter if you would like to use the default .minecraft_au2sb folder: 
-set /p "minecraft_au2sb_folder="
+echo        press Enter if you would like to use the default .minecraft_au2sb folder (recommended).
+echo.
+set /p "minecraft_au2sb_folder=Path: "
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
@@ -84,7 +86,7 @@ REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
     echo Your mods appear to be up-to-date.
-    set /p "user_input=Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
+    set /p "user_input=     Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
 )
 REM If the user input is 'y' or 'yes', set mods_uptodate to false
 if /I "%user_input%"=="y" (
@@ -150,9 +152,9 @@ if "%fabric_exists%"=="false" (
 	echo Fabric appears to not be installed, downloading now
     curl -L https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.1/fabric-installer-1.0.1.jar --output "%temp%\fabric-installer.jar"
 	echo.
-    winget.exe install --id EclipseAdoptium.Temurin.21.JRE --exact --accept-source-agreements --silent --disable-interactivity --accept-package-agreements
     java -jar %temp%\fabric-installer.jar client -mcversion 1.20.1 -dir %appdata%\.minecraft
-	echo Fabric installed (unless there is an error indicating you are missing java)
+	echo Fabric installed
+    echo (unless there is an error indicating you are missing java, then try again after installing java)
 )
 
 REM Define the path to the launcher_profiles.json file
@@ -190,8 +192,9 @@ if "!is_update!"=="true" (
     echo Modpack installed
 )
 echo.
-echo You can now launch your game with the AU2SB profile
+echo        You can now launch your game with the AU2SB profile
 echo.
-echo If there were any errors please let me know
+echo        If there were any errors please let me know
+echo.
 endlocal
 pause
