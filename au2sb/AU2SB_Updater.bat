@@ -21,10 +21,13 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	exit /b
 )
 REM Prompt the user for the Minecraft folder path
-echo This installer/updater script will automatically download the required mods and config files. 
-echo Fabric will be installed automatically if it is not already installed. (Requires Java)
-echo Please enter the folder path if you are using a custom Minecraft folder location,
-set /p "minecraft_au2sb_folder=or press Enter if you would like to use the default .minecraft_au2sb folder: "
+echo        This installer/updater script will automatically download the required mods and config files. 
+echo.
+echo        Fabric will be installed automatically if it is not already installed. (Requires Java)
+echo.
+echo        Please enter the folder path if you are using a custom Minecraft folder location, or
+echo        press Enter if you would like to use the default .minecraft_au2sb folder: 
+set /p "minecraft_au2sb_folder="
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
