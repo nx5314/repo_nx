@@ -34,6 +34,8 @@ REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecra
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
 echo.
+echo Path set to %minecraft_au2sb_folder%
+echo.
 
 REM Make folder
 if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
@@ -87,14 +89,17 @@ if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
     echo Your mods appear to be up-to-date.
     set /p "user_input=     Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
+    echo.
 )
 REM If the user input is 'y' or 'yes', set mods_uptodate to false
 if /I "%user_input%"=="y" (
     set "mods_uptodate=false"
+    echo Mods status overruled
     REM Mods up-to-date set to = %mods_uptodate%
 )
 if /I "%user_input%"=="yes" (
     set "mods_uptodate=false"
+    echo Mods status overruled
     REM Mods up-to-date set to = %mods_uptodate%
 )
 
@@ -192,7 +197,8 @@ if "!is_update!"=="true" (
     echo Modpack installed
 )
 echo.
-echo        You can now launch your game with the AU2SB profile
+echo        Launch your game with the AU2SB profile
+echo        You may need to adjust the RAM allocation in the launcher
 echo.
 echo        If there were any errors please let me know
 echo.
