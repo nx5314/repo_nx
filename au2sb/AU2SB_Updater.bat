@@ -218,8 +218,8 @@ if not "!mods_uptodate!"=="true" (
     REM If the file size is less than .5GB (in bytes), indicate the mods download failed
     if !mods_size! LSS 500000000 (
         echo The download failed, please report that the mods download needs to be fixed
-        pause
-        exit /b
+        set "fail_state=true"
+        goto :cleanup
     )
 
     echo Extracting mods...
@@ -231,6 +231,16 @@ if not "!mods_uptodate!"=="true" (
 REM Download, extract, and move config
 echo Downloading config...
 curl -L "%config_url%" --output "%temp%\au2sb_config.zip"
+
+REM Check the size of the downloaded file
+for %%A in ("%temp%\au2sb_config.zip") do set config_size=%%~zA
+REM If the file size is less than 10MB (in bytes), indicate the mods download failed
+if !config_size! LSS 10000000 (
+    echo The download failed, please report that the config download needs to be fixed
+    set "fail_state=true"
+    goto :cleanup
+)
+
 echo Extracting config...
 tar -xf "%temp%\au2sb_config.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving config to %minecraft_au2sb_folder%...
@@ -239,6 +249,16 @@ robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move
 REM Download, extract, and move resourcepacks
 echo Downloading resourcepacks...
 curl -L "%resourcepacks_url%" --output "%temp%\au2sb_resourcepacks.zip"
+
+REM Check the size of the downloaded file
+for %%A in ("%temp%\au2sb_resourcepacks.zip") do set resourcepacks_size=%%~zA
+REM If the file size is less than 1MB (in bytes), indicate the mods download failed
+if !resourcepacks_size! LSS 1000000 (
+    echo The download failed, please report that the resourcepacks download needs to be fixed
+    set "fail_state=true"
+    goto :cleanup
+)
+
 echo Extracting resourcepacks...
 tar -xf "%temp%\au2sb_resourcepacks.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving resourcepacks to %minecraft_au2sb_folder%...
@@ -247,11 +267,22 @@ robocopy "%temp%\au2sb\resourcepacks" "%minecraft_au2sb_folder%\resourcepacks" /
 REM Download, extract, and move extras
 echo Downloading extras...
 curl -L "%extras_url%" --output "%temp%\au2sb_extras.zip"
+
+REM Check the size of the downloaded file
+for %%A in ("%temp%\au2sb_extras.zip") do set extras_size=%%~zA
+REM If the file size is less than .5KB (in bytes), indicate the mods download failed
+if !extras_size! LSS 500 (
+    echo The download failed, please report that the extras download needs to be fixed
+    set "fail_state=true"
+    goto :cleanup
+)
+
 echo Extracting extras...
 tar -xf "%temp%\au2sb_extras.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving extras to %minecraft_au2sb_folder%...
 robocopy "%temp%\au2sb" "%minecraft_au2sb_folder%" /s /r:100 /move /log:"%temp%\au2sb_extras.log" 2>&1 >nul
 
+:cleanup
 REM Delete the zips
 echo Cleaning up zips...
 if "%mods_uptodate%"=="false" (
@@ -261,6 +292,12 @@ del "%temp%\au2sb_config.zip" /q 2>&1 >nul
 del "%temp%\au2sb_resourcepacks.zip" /q 2>&1 >nul
 del "%temp%\au2sb_extras.zip" /q 2>&1 >nul
 rmdir "%temp%\au2sb" /s /q
+
+REM Exit if in failed state
+if "%fail_state%"=="true" (
+    pause
+    exit /b
+)
 
 echo.
 REM Check the flag and display the appropriate message
