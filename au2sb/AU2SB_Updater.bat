@@ -169,6 +169,7 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
                 echo Mods folder missing
                 echo.
                 goto mods_folder_empty_or_missing
+            )
             if not exist "%minecraft_au2sb_folder%\mods\*" (
                 set "mods_uptodate=false"
                 echo Mods folder empty
