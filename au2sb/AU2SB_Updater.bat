@@ -24,7 +24,7 @@ REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files. 
 echo.
 echo        An AU2SB profile will be created in the Minecraft launcher.
-echo        Fabric will be installed automatically if it is not already installed. (requires java)
+echo        Fabric will be installed automatically if it is not already installed.
 echo.
 echo        Please enter the folder path if you would like to use a custom folder location, or
 echo        press Enter if you would like to use the default .minecraft_au2sb folder. (recommended)
