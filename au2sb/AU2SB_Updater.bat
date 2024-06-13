@@ -20,8 +20,12 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	pause
 	exit /b
 )
+REM Check AU2SB version
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
+
 REM Intro and path prompt
-echo        This installer/updater script will automatically download the required mods and config files. 
+echo        This installer/updater script will automatically download the required mods and config files.
+echo        The latest version of AU2SB is !latest_AU2SB_version!
 echo.
 echo        An AU2SB profile will be created in the Minecraft launcher.
 echo        Fabric will be installed automatically if it is not already installed.
