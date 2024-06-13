@@ -164,8 +164,20 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
             REM Read the contents of the file
             for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\AU2SBmodsversion"') do (set "current_mods_url=%%i")
             set "current_mods_url=!current_mods_url:~0,-1!"
-            set "is_update=true"
-            goto continue
+            if not exist "%minecraft_au2sb_folder%\mods" (
+                set "mods_uptodate=false"
+                echo Mods folder missing
+                echo.
+                goto mods_folder_empty_or_missing
+            if not exist "%minecraft_au2sb_folder%\mods\*" (
+                set "mods_uptodate=false"
+                echo Mods folder empty
+                echo.
+                goto mods_folder_empty_or_missing
+            ) else (
+                set "is_update=true"
+                goto continue
+            )
         )
     )
 ) else (
@@ -197,6 +209,7 @@ if "%mods_uptodate%"=="true" (
 )
 if "%override_mods%"=="" (
     echo Skipping mods
+    echo.
     goto skip_mods
 )
 REM If the user input is 'y' or 'yes', set mods_uptodate to false
@@ -208,6 +221,7 @@ if not "!result_mods!"=="%override_mods%" (
     REM Mods up-to-date set to = %mods_uptodate%
 )
 
+:mods_folder_empty_or_missing
 REM Download, extract, and move mods if mods_uptodate is not true
 if not "!mods_uptodate!"=="true" (
     echo Downloading mods...
@@ -270,8 +284,8 @@ curl -L "%extras_url%" --output "%temp%\au2sb_extras.zip"
 
 REM Check the size of the downloaded file
 for %%A in ("%temp%\au2sb_extras.zip") do set extras_size=%%~zA
-REM If the file size is less than .5KB (in bytes), indicate the mods download failed
-if !extras_size! LSS 500 (
+REM If the file size is less than 1 byte, indicate the mods download failed
+if !extras_size! LSS 1 (
     echo The download failed, please report that the extras download needs to be fixed
     set "fail_state=true"
     goto :cleanup
