@@ -277,7 +277,7 @@ if !config_size! LSS 10000000 (
 echo Extracting config...
 tar -xf "%temp%\au2sb_config.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving config to %minecraft_au2sb_folder%...
-robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move /log:"%temp%\au2sb_config.log" 2>&1 >nul
+robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move /xo /log:"%temp%\au2sb_config.log" 2>&1 >nul
 
 REM Download, extract, and move resourcepacks
 echo Downloading resourcepacks...
@@ -313,7 +313,7 @@ if !extras_size! LSS 1 (
 echo Extracting extras...
 tar -xf "%temp%\au2sb_extras.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving extras to %minecraft_au2sb_folder%...
-robocopy "%temp%\au2sb" "%minecraft_au2sb_folder%" /s /r:100 /move /log:"%temp%\au2sb_extras.log" 2>&1 >nul
+robocopy "%temp%\au2sb" "%minecraft_au2sb_folder%" /s /r:100 /move /xo /log:"%temp%\au2sb_extras.log" 2>&1 >nul
 
 :cleanup
 REM Delete the zips
