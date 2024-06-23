@@ -1,8 +1,8 @@
 @echo off
-title AU2SB Updater 1.1.2
+title AU2SB Updater 1.2.0
 setlocal enabledelayedexpansion
 REM Set the current version of the script
-set "this_updater_version=1.1.2"
+set "this_updater_version=1.2.0"
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
@@ -23,6 +23,8 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 REM Check AU2SB version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
 
+
+
 REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files.
 echo        The latest version of AU2SB is !latest_AU2SB_version!
@@ -30,15 +32,23 @@ echo.
 echo        An AU2SB profile will be created in the Minecraft launcher.
 echo        Fabric will be installed automatically if it is not already installed.
 echo.
+REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
+if exist "%appdata%\.minecraft_au2sb\path" (
+    set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
+    goto skip_path_prompt
+)
 echo        Please enter the folder path if you would like to use a custom folder location, or
 echo        press Enter if you would like to use the default .minecraft_au2sb folder. (recommended)
 echo.
 set /p "minecraft_au2sb_folder=Path: "
+:skip_path_prompt
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
+if "%minecraft_au2sb_folder%"=="%appdata%\.minecraft" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
 echo.
-echo Path set to %minecraft_au2sb_folder%
+echo AU2SB install path is %minecraft_au2sb_folder%
+echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
 echo.
 
 REM Check if %appdata%\.minecraft exists
@@ -173,6 +183,12 @@ for /f "delims=" %%i in (%optionsfile%) do (
     )
 )
 move /Y "%optionsfiletemp%" "%optionsfile%" >nul
+
+if not exist "%minecraft_au2sb_folder%\keybinds_set" (
+    powershell -Command "$keybinds = @{}; (Get-Content '%minecraft_au2sb_folder%\defaultkeybinds.txt') | ForEach-Object { $key = ($_ -split ':')[0]; $keybinds[$key] = $_ }; $newContent = (Get-Content '%minecraft_au2sb_folder%\options.txt') | ForEach-Object { if ($_ -match '^key_') { $key = ($_ -split ':')[0]; if ($keybinds.ContainsKey($key)) { $keybinds[$key] } else { $_ } } else { $_ } }; $keybinds.Keys | ForEach-Object { if ($keybinds[$_]) { $newContent += $keybinds[$_] } }; $newContent | Out-File -FilePath '%minecraft_au2sb_folder%\options.txt' -Encoding utf8"
+
+    echo. > "%minecraft_au2sb_folder%\keybinds_set"
+)
 
 REM Fetch the URL for the downloads
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/mods.txt') do (set "mods_url=%%i")
