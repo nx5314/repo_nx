@@ -11,6 +11,7 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	rename AU2SB_Updater.bat AU2SB_Updater_old.bat
     curl -s -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater.bat"
     echo AU2SB Updater has been updated to %latest_updater_version%
+    echo.
     title AU2SB Updater %latest_updater_version%
     REM Delete the old updater
     del %updater_download_path%\AU2SB_Updater_old.bat /q 2>nul
