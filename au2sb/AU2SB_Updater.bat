@@ -357,7 +357,7 @@ if "!is_update!"=="true" (
     echo Modpack installed
 )
 echo.
-echo        Launch your game with the AU2SB profile
+echo        Start your game with the AU2SB profile in the Minecraft Launcher
 echo        Please allow your game a couple minutes to launch, it will ding when finished
 echo.
 echo        If there were any errors please let me know
