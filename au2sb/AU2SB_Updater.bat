@@ -109,7 +109,7 @@ if "%proceed_with_java_install%"=="true" (
     REM Loop until the file size is at least 33MB (in bytes)
     :downloadLoop
     curl -L "https://eif7tq.dm.files.1drv.com/y4maXEo--4pCZFY3H2U9wsEO--av1LGdWDzoum26zFJ4cAxxoI17VyJA8GcGtiDMDbBNJ8Oy4N7k5H_w511KLhmeyuBSLEAVNh8uUJbF83UtJRUB7t_ygL45nYD2BYLQyB19lh4K2pnJriShoMO6TG6wZosKZBx7CBuTMbkkoYtVnKfn5t_lfNH_SUBhXZ9E7vBZWq9MCWAEmiOrzRYY8ouuA" --output "%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi"
-    timeout /t 10 /nobreak >nul
+    timeout /t 1 /nobreak >nul
     REM Check the size of the downloaded file
     for %%A in ("%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi") do set size=%%~zA
     REM I really tried to get this to download from the official github but it just would not cooperate when run in the bat which is why all this shit is here and I am too lazy to remove it
