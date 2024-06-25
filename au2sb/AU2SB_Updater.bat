@@ -1,8 +1,11 @@
+:: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack. It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files). If updates are available, it downloads and installs them. It also sets up a custom Minecraft profile with optimized Java arguments and manages the installation of Fabric, a mod loader. The script ensures all components are up to date and configures the game environment for AU2SB. If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
+:: Run the script in a Windows command prompt environment. It will guide you through the installation or update process with prompts.
+:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.
+
 @echo off
-title AU2SB Updater 1.2.1
 setlocal enabledelayedexpansion
-REM Set the current version of the script
-set "this_updater_version=1.2.1"
+set "this_updater_version=1.3.0"
+title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
@@ -24,13 +27,12 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 REM Check AU2SB version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
 
-
-
 REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files.
 echo        The latest version of AU2SB is !latest_AU2SB_version!
 echo.
 echo        An AU2SB profile will be created in the Minecraft launcher.
+echo        If you do not yet have Minecraft installed, the launcher will be installed.
 echo        Fabric will be installed automatically if it is not already installed.
 echo.
 REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
@@ -55,8 +57,17 @@ echo.
 REM Check if %appdata%\.minecraft exists
 if not exist "%appdata%\.minecraft" (
     echo Can't seem to find the base .minecraft folder, something weird going on or do you not have the game installed?
-    pause
-    exit /b    
+    set /p "install_minecraft=Would you like to install the Minecraft Launcher? ([y]es / no [Enter]): "
+    echo.
+    REM If the user input is 'y' or 'yes', install Minecraft Launcher
+    echo !install_minecraft! | findstr /I /C:"y" >nul && (
+        echo Installing Minecraft Launcher now... 
+        winget.exe install --id Mojang.MinecraftLauncher --exact --accept-source-agreements --silent --disable-interactivity --accept-package-agreements
+    ) || (
+        echo Please download and install the Minecraft Launcher and run the AU2SB installer again.
+        pause
+        exit /b
+    )
 )
 
 REM Make folder
@@ -536,15 +547,13 @@ echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
     set /p "zerotier_prompt=Do you still need to configure ZeroTier? ([y]es / no [Enter]): "
     echo.
-    REM If the user input is 'y' or 'yes', set zerotier_set to false
+    REM If the user input is 'y' or 'yes', install zerotier
     echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
-        set "zerotier_set=false" 
         echo Installing ZeroTier now... 
         winget.exe install --id ZeroTier.ZeroTierOne --exact
         REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
     ) || (
-        set "zerotier_set=true" 
         echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB 
         goto skip_zerotier
     )
