@@ -1,8 +1,8 @@
 @echo off
-title AU2SB Updater 1.2.0
+title AU2SB Updater 1.2.1
 setlocal enabledelayedexpansion
 REM Set the current version of the script
-set "this_updater_version=1.2.0"
+set "this_updater_version=1.2.1"
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
@@ -63,6 +63,66 @@ REM Make folder
 if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
 if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
 
+REM Define the path to the launcher_profiles.json file
+set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
+
+:recheck_launcher_profiles
+REM Make sure it exists
+if not exist %launcher_profiles% (
+    echo.
+    echo Whoa, you don't seem to have any launcher profiles I can read, have you not run the Minecraft Launcher even once?
+    set /p "recheck_profiles=Try again? (y/n): "
+    echo !recheck_profiles! | findstr /I /C:"y" >nul && (
+        goto recheck_launcher_profiles
+    ) || (
+        set /p "create_new_file=Would you like to create a new launcher_profiles.json file? (y/n): "
+        echo !create_new_file! | findstr /I /C:"y" >nul && (
+            echo Creating new launcher_profiles.json file...
+            (
+                echo {
+                echo   "profiles" : {
+                echo     "Latest Snapshot" : {
+                echo       "icon" : "Dirt",
+                echo       "javaArgs" : "-Xmx4G",
+                echo       "lastUsed" : "1970-01-01T00:00:00.002Z",
+                echo       "lastVersionId" : "latest-snapshot",
+                echo       "name" : "",
+                echo       "type" : "latest-snapshot"
+                echo     },
+                echo     "Latest Version" : {
+                echo       "icon" : "Grass",
+                echo       "lastUsed" : "2024-01-01T01:01:00.002Z",
+                echo       "lastVersionId" : "latest-release",
+                echo       "name" : "",
+                echo       "type" : "latest-release"
+                echo     }
+                echo   },
+                echo   "settings" : {
+                echo     "crashAssistance" : false,
+                echo     "enableAdvanced" : true,
+                echo     "enableAnalytics" : true,
+                echo     "enableHistorical" : true,
+                echo     "enableReleases" : true,
+                echo     "enableSnapshots" : true,
+                echo     "keepLauncherOpen" : true,
+                echo     "profileSorting" : "ByLastPlayed",
+                echo     "showGameLog" : false,
+                echo     "showMenu" : true,
+                echo     "soundOn" : false
+                echo   },
+                echo   "version" : 3
+                echo }
+            ) > %launcher_profiles%
+            goto recheck_launcher_profiles
+        )
+        echo Please ensure %appdata%\.minecraft\launcher_profiles.json exists before attempting installation again
+        pause
+        exit /b
+    )
+) else (
+    echo Checking profiles...
+)
+
 REM Check fabric installation
 set "fabric_exists=false"
 if exist "%appdata%\.minecraft\versions\fabric-loader-0.15.11-1.20.1" (
@@ -73,7 +133,7 @@ if exist "%appdata%\.minecraft\versions\fabric-loader-0.15.11-1.20.1" (
 REM If missing, download fabric and java installer and run
 if "%fabric_exists%"=="false" (
 	echo.
-	echo Fabric appears to not be installed, downloading now
+	echo Fabric appears to not be installed, downloading now...
     curl -L https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.1/fabric-installer-1.0.1.jar --output "%temp%\fabric-installer.jar"
 	echo.
     java -jar %temp%\fabric-installer.jar client -mcversion 1.20.1 -dir %appdata%\.minecraft
@@ -104,24 +164,7 @@ echo %install_java% | findstr /I /C:"y" >nul && (set "proceed_with_java_install=
 REM If proceed_with_java_install is true, install java
 if "%proceed_with_java_install%"=="true" (
     echo Java will now be installed
-    REM Initialize a variable for the file size
-    set size=0
-    REM Loop until the file size is at least 33MB (in bytes)
-    :downloadLoop
-    curl -L "https://eif7tq.dm.files.1drv.com/y4maXEo--4pCZFY3H2U9wsEO--av1LGdWDzoum26zFJ4cAxxoI17VyJA8GcGtiDMDbBNJ8Oy4N7k5H_w511KLhmeyuBSLEAVNh8uUJbF83UtJRUB7t_ygL45nYD2BYLQyB19lh4K2pnJriShoMO6TG6wZosKZBx7CBuTMbkkoYtVnKfn5t_lfNH_SUBhXZ9E7vBZWq9MCWAEmiOrzRYY8ouuA" --output "%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi"
-    timeout /t 1 /nobreak >nul
-    REM Check the size of the downloaded file
-    for %%A in ("%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi") do set size=%%~zA
-    REM I really tried to get this to download from the official github but it just would not cooperate when run in the bat which is why all this shit is here and I am too lazy to remove it
-    REM If the file size is less than 33MB (in bytes), go back to the start of the loop
-    if !size! LSS 34603008 (
-        echo The download failed, attempting to download again
-        timeout /t 10 /nobreak >nul
-        goto downloadLoop
-    )
-    
-    msiexec /i "%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi" INSTALLLEVEL=1 /quiet
-    del "%temp%\OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.msi" /q 2>&1 >nul
+    winget.exe install --id EclipseAdoptium.Temurin.21.JRE --exact
     echo Java should now be installed, please exit this terminal window and run this installer again to finish installing AU2SB
     pause
     exit /b
@@ -134,9 +177,6 @@ if "%proceed_with_install%"=="false" (
 )
 
 :fabric_is_installed
-
-REM Define the path to the launcher_profiles.json file
-set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
 
 REM Set RAM allocation amount
 if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
@@ -152,8 +192,8 @@ REM Trim leading and trailing spaces
 for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%a"
 for /f "tokens=* delims= " %%a in ("!RAM_allocation:~0,2!") do set "RAM_allocation=%%~a"
 if %RAM_allocation% geq 6 if %RAM_allocation% leq 16 (
-    if !RAM_allocation! lss 10 (
-        echo Warning: Allocating less than 10 GB of RAM might not be enough.
+    if !RAM_allocation! lss 8 (
+        echo Warning: Allocating less than 8 GB of RAM might not be enough.
         set /p "proceed=Do you want to proceed? (y/n): "
         echo !proceed! | findstr /I /C:"y" >nul || goto input_loop
     )
@@ -166,30 +206,6 @@ if %RAM_allocation% geq 6 if %RAM_allocation% leq 16 (
 
 REM Invoke PowerShell to add the AU2SB profile to the launcher_profiles.json file
 powershell -Command "$newAU2SBProfile = @{ 'created' = '1970-01-01T00:00:00.002Z'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = 'data:image/png;base64,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'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB'; 'type' = 'custom' }; $jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; if ($jsonContent.profiles.PSObject.Properties.Name -contains 'AU2SB') { $jsonContent.profiles.AU2SB = $newAU2SBProfile } else { $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name 'AU2SB' -Value $newAU2SBProfile -Force }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
-
-
-REM copy options.txt
-if not exist "%minecraft_au2sb_folder%\options.txt" copy /Y "%base_minecraft_folder%\options.txt" "%minecraft_au2sb_folder%\options.txt" >nul
-
-REM Read the options.txt file and replace the resourcePacks line
-set "optionsfile=%minecraft_au2sb_folder%\options.txt"
-set "optionsfiletemp=%temp%\au2sboptionsfiletemp.txt"
-if exist "%optionsfiletemp%" del "%optionsfiletemp%"
-for /f "delims=" %%i in (%optionsfile%) do (
-    set "line=%%i"
-    if "!line:~0,13!"=="resourcePacks" (
-        echo resourcePacks:["vanilla","fabric","Moonlight Mods Dynamic Assets","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","Fabrication","Fabrication grayscale","seamless:default_seamless","seasons:seasonal_lush_caves","rprenames:default_dark_mode","presencefootsteps:default_sound_pack","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/Fancy, GUI Overhaul v0.1.2.8.zip","a_good_place:default_animations","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/[1.4] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
-    ) else (
-        echo !line!>>"%optionsfiletemp%"
-    )
-)
-move /Y "%optionsfiletemp%" "%optionsfile%" >nul
-
-if not exist "%minecraft_au2sb_folder%\keybinds_set" (
-    powershell -Command "$keybinds = @{}; (Get-Content '%minecraft_au2sb_folder%\defaultkeybinds.txt') | ForEach-Object { $key = ($_ -split ':')[0]; $keybinds[$key] = $_ }; $newContent = (Get-Content '%minecraft_au2sb_folder%\options.txt') | ForEach-Object { if ($_ -match '^key_') { $key = ($_ -split ':')[0]; if ($keybinds.ContainsKey($key)) { $keybinds[$key] } else { $_ } } else { $_ } }; $keybinds.Keys | ForEach-Object { if ($keybinds[$_]) { $newContent += $keybinds[$_] } }; $newContent | Out-File -FilePath '%minecraft_au2sb_folder%\options.txt' -Encoding utf8"
-
-    echo. > "%minecraft_au2sb_folder%\keybinds_set"
-)
 
 REM Fetch the URL for the downloads
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/mods.txt') do (set "mods_url=%%i")
@@ -213,13 +229,11 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
             if not exist "%minecraft_au2sb_folder%\mods" (
                 set "mods_uptodate=false"
                 echo Mods folder missing
-                echo.
                 goto mods_folder_empty_or_missing
             )
             if not exist "%minecraft_au2sb_folder%\mods\*" (
                 set "mods_uptodate=false"
                 echo Mods folder empty
-                echo.
                 goto mods_folder_empty_or_missing
             ) else (
                 set "is_update=true"
@@ -332,9 +346,175 @@ tar -xf "%temp%\au2sb_extras.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving extras to %minecraft_au2sb_folder%...
 robocopy "%temp%\au2sb" "%minecraft_au2sb_folder%" /s /r:100 /move /xo /log:"%temp%\au2sb_extras.log" 2>&1 >nul
 
+REM copy options.txt
+if not exist "%base_minecraft_folder%\options.txt" (
+    echo Creating new options.txt file...
+    (
+        echo version:3465
+        echo autoJump:false
+        echo operatorItemsTab:false
+        echo autoSuggestions:true
+        echo chatColors:true
+        echo chatLinks:true
+        echo chatLinksPrompt:true
+        echo enableVsync:true
+        echo entityShadows:true
+        echo forceUnicodeFont:false
+        echo discrete_mouse_scroll:false
+        echo invertYMouse:false
+        echo realmsNotifications:true
+        echo reducedDebugInfo:false
+        echo showSubtitles:false
+        echo directionalAudio:false
+        echo touchscreen:false
+        echo fullscreen:false
+        echo bobView:true
+        echo toggleCrouch:false
+        echo toggleSprint:false
+        echo darkMojangStudiosBackground:false
+        echo hideLightningFlashes:false
+        echo mouseSensitivity:0.5
+        echo fov:0.0
+        echo screenEffectScale:1.0
+        echo fovEffectScale:1.0
+        echo darknessEffectScale:1.0
+        echo glintSpeed:0.5
+        echo glintStrength:0.75
+        echo damageTiltStrength:1.0
+        echo highContrast:false
+        echo gamma:0.0
+        echo renderDistance:32
+        echo simulationDistance:10
+        echo entityDistanceScaling:1.0
+        echo guiScale:4
+        echo particles:0
+        echo maxFps:260
+        echo graphicsMode:1
+        echo ao:true
+        echo prioritizeChunkUpdates:0
+        echo biomeBlendRadius:7
+        echo renderClouds:"true"
+        echo resourcePacks:[]
+        echo incompatibleResourcePacks:[]
+        echo lastServer:
+        echo lang:en_us
+        echo soundDevice:""
+        echo chatVisibility:0
+        echo chatOpacity:1.0
+        echo chatLineSpacing:0.0
+        echo textBackgroundOpacity:0.5
+        echo backgroundForChatOnly:true
+        echo hideServerAddress:false
+        echo advancedItemTooltips:false
+        echo pauseOnLostFocus:true
+        echo overrideWidth:0
+        echo overrideHeight:0
+        echo chatHeightFocused:1.0
+        echo chatDelay:0.0
+        echo chatHeightUnfocused:0.4375
+        echo chatScale:1.0
+        echo chatWidth:1.0
+        echo notificationDisplayTime:1.0
+        echo mipmapLevels:4
+        echo useNativeTransport:true
+        echo mainHand:"right"
+        echo attackIndicator:1
+        echo narrator:0
+        echo tutorialStep:movement
+        echo mouseWheelSensitivity:1.0
+        echo rawMouseInput:true
+        echo glDebugVerbosity:1
+        echo skipMultiplayerWarning:false
+        echo skipRealms32bitWarning:false
+        echo hideMatchedNames:true
+        echo joinedFirstServer:false
+        echo hideBundleTutorial:false
+        echo syncChunkWrites:true
+        echo showAutosaveIndicator:true
+        echo allowServerListing:true
+        echo onlyShowSecureChat:false
+        echo panoramaScrollSpeed:1.0
+        echo telemetryOptInExtra:false
+        echo onboardAccessibility:false
+        echo key_key.attack:key.mouse.left
+        echo key_key.use:key.mouse.right
+        echo key_key.forward:key.keyboard.w
+        echo key_key.left:key.keyboard.a
+        echo key_key.back:key.keyboard.s
+        echo key_key.right:key.keyboard.d
+        echo key_key.jump:key.keyboard.space
+        echo key_key.sneak:key.keyboard.left.shift
+        echo key_key.sprint:key.keyboard.left.control
+        echo key_key.drop:key.keyboard.q
+        echo key_key.inventory:key.keyboard.e
+        echo key_key.chat:key.keyboard.t
+        echo key_key.playerlist:key.keyboard.tab
+        echo key_key.pickItem:key.mouse.middle
+        echo key_key.command:key.keyboard.slash
+        echo key_key.socialInteractions:key.keyboard.p
+        echo key_key.screenshot:key.keyboard.f2
+        echo key_key.togglePerspective:key.keyboard.f5
+        echo key_key.smoothCamera:key.keyboard.unknown
+        echo key_key.fullscreen:key.keyboard.f11
+        echo key_key.spectatorOutlines:key.keyboard.unknown
+        echo key_key.swapOffhand:key.keyboard.f
+        echo key_key.saveToolbarActivator:key.keyboard.c
+        echo key_key.loadToolbarActivator:key.keyboard.x
+        echo key_key.advancements:key.keyboard.l
+        echo key_key.hotbar.1:key.keyboard.1
+        echo key_key.hotbar.2:key.keyboard.2
+        echo key_key.hotbar.3:key.keyboard.3
+        echo key_key.hotbar.4:key.keyboard.4
+        echo key_key.hotbar.5:key.keyboard.5
+        echo key_key.hotbar.6:key.keyboard.6
+        echo key_key.hotbar.7:key.keyboard.7
+        echo key_key.hotbar.8:key.keyboard.8
+        echo key_key.hotbar.9:key.keyboard.9
+        echo soundCategory_master:1.0
+        echo soundCategory_music:1.0
+        echo soundCategory_record:1.0
+        echo soundCategory_weather:1.0
+        echo soundCategory_block:1.0
+        echo soundCategory_hostile:1.0
+        echo soundCategory_neutral:1.0
+        echo soundCategory_player:1.0
+        echo soundCategory_ambient:1.0
+        echo soundCategory_voice:1.0
+        echo modelPart_cape:true
+        echo modelPart_jacket:true
+        echo modelPart_left_sleeve:true
+        echo modelPart_right_sleeve:true
+        echo modelPart_left_pants_leg:true
+        echo modelPart_right_pants_leg:true
+        echo modelPart_hat:true
+    ) > "%base_minecraft_folder%\options.txt"
+)
+if not exist "%minecraft_au2sb_folder%\options.txt" copy /Y "%base_minecraft_folder%\options.txt" "%minecraft_au2sb_folder%\options.txt" >nul
+
+REM Read the options.txt file and replace the resourcePacks line
+set "optionsfile=%minecraft_au2sb_folder%\options.txt"
+set "optionsfiletemp=%temp%\au2sboptionsfiletemp.txt"
+if exist "%optionsfiletemp%" del "%optionsfiletemp%"
+for /f "delims=" %%i in (%optionsfile%) do (
+    set "line=%%i"
+    if "!line:~0,13!"=="resourcePacks" (
+        echo resourcePacks:["vanilla","fabric","Moonlight Mods Dynamic Assets","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","Fabrication","Fabrication grayscale","seamless:default_seamless","seasons:seasonal_lush_caves","rprenames:default_dark_mode","presencefootsteps:default_sound_pack","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/Fancy, GUI Overhaul v0.1.2.8.zip","a_good_place:default_animations","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/[1.4] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
+    ) else (
+        echo !line!>>"%optionsfiletemp%"
+    )
+)
+move /Y "%optionsfiletemp%" "%optionsfile%" >nul
+
+REM Replace the options.txt keybindings with custom defaults if not previously done, powershell is easier for this bulk operation
+if not exist "%minecraft_au2sb_folder%\keybinds_set" (
+    powershell -Command "$keybinds = @{}; (Get-Content '%minecraft_au2sb_folder%\defaultkeybinds.txt') | ForEach-Object { $key = ($_ -split ':')[0]; $keybinds[$key] = $_ }; $newContent = (Get-Content '%minecraft_au2sb_folder%\options.txt') | ForEach-Object { if ($_ -match '^key_') { $key = ($_ -split ':')[0]; if ($keybinds.ContainsKey($key)) { $keybinds[$key] } else { $_ } } else { $_ } }; $keybinds.Keys | ForEach-Object { if ($keybinds[$_]) { $newContent += $keybinds[$_] } }; $newContent | Out-File -FilePath '%minecraft_au2sb_folder%\options.txt' -Encoding utf8"
+
+    echo. 2> "%minecraft_au2sb_folder%\keybinds_set"
+)
+
 :cleanup
 REM Delete the zips
-echo Cleaning up zips...
+echo Cleaning up leftovers...
 if "%mods_uptodate%"=="false" (
     del "%temp%\au2sb_mods.zip" /q 2>&1 >nul
 )
@@ -345,22 +525,46 @@ rmdir "%temp%\au2sb" /s /q
 
 REM Exit if in failed state
 if "%fail_state%"=="true" (
+    echo.
+    echo.
+    echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference
     pause
     exit /b
 )
 
 echo.
+if not exist "%minecraft_au2sb_folder%\zerotier_set" (
+    set /p "zerotier_prompt=Do you still need to configure ZeroTier? ([y]es / no [Enter]): "
+    echo.
+    REM If the user input is 'y' or 'yes', set zerotier_set to false
+    echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
+        set "zerotier_set=false" 
+        echo Installing ZeroTier now... 
+        winget.exe install --id ZeroTier.ZeroTierOne --exact
+        REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
+        echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+    ) || (
+        set "zerotier_set=true" 
+        echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB 
+        goto skip_zerotier
+    )
+) else (
+    goto skip_zerotier
+)
+:skip_zerotier
+
+echo.
 REM Check the flag and display the appropriate message
 if "!is_update!"=="true" (
-    echo Modpack updated
+    echo AU2SB updated
 ) else (
-    echo Modpack installed
+    echo AU2SB installed
 )
 echo.
 echo        Start your game with the AU2SB profile in the Minecraft Launcher
-echo        Please allow your game a couple minutes to launch, it will ding when finished
+echo        The game may take a moment to launch, it will ding when finished
 echo.
-echo        If there were any errors please let me know
+echo        If there were any errors in your installation please let me know
 echo.
 endlocal
 pause
