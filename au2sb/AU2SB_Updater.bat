@@ -71,11 +71,11 @@ REM Make sure it exists
 if not exist %launcher_profiles% (
     echo.
     echo Whoa, you don't seem to have any launcher profiles I can read, have you not run the Minecraft Launcher even once?
-    set /p "recheck_profiles=Try again? (y/n): "
+    set /p "recheck_profiles=Try again? ([y]es / no [Enter]): "
     echo !recheck_profiles! | findstr /I /C:"y" >nul && (
         goto recheck_launcher_profiles
     ) || (
-        set /p "create_new_file=Would you like to create a new launcher_profiles.json file? (y/n): "
+        set /p "create_new_file=Would you like to create a new launcher_profiles.json file? ([y]es / no [Enter]): "
         echo !create_new_file! | findstr /I /C:"y" >nul && (
             echo Creating new launcher_profiles.json file...
             (
@@ -170,7 +170,7 @@ if "%proceed_with_java_install%"=="true" (
     exit /b
 )
 
-if "%proceed_with_install%"=="false" (
+if "%proceed_with_java_install%"=="false" (
     echo Java will not be installed, please install it yourself and run this installer again to finish installing AU2SB
     pause
     exit /b
@@ -194,7 +194,7 @@ for /f "tokens=* delims= " %%a in ("!RAM_allocation:~0,2!") do set "RAM_allocati
 if %RAM_allocation% geq 6 if %RAM_allocation% leq 16 (
     if !RAM_allocation! lss 8 (
         echo Warning: Allocating less than 8 GB of RAM might not be enough.
-        set /p "proceed=Do you want to proceed? (y/n): "
+        set /p "proceed=Do you want to proceed? ([y]es / no [Enter]): "
         echo !proceed! | findstr /I /C:"y" >nul || goto input_loop
     )
     echo !RAM_allocation! > "%minecraft_au2sb_folder%\ram_alloc.txt"
