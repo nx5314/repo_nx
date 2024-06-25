@@ -162,8 +162,8 @@ REM Check if fabric was able to install
         echo Fabric installed
         goto fabric_is_installed
 )
-:fabric_is_installed
 REM If java needs to be installed
+set proceed_with_java_install=null
 if "%need_java%"=="true" (
     echo.
     set "install_java=null"
