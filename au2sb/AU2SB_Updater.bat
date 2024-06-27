@@ -58,12 +58,12 @@ REM Check if MinecraftLauncher.exe is running
 tasklist /FI "IMAGENAME eq MinecraftLauncher.exe" 2>NUL | find /I /N "MinecraftLauncher.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo Minecraft Launcher is currently running. Please close it before proceeding.
-    set /p "kill_launcher=Would you like to kill all MinecraftLauncher.exe processes? ([y]es / no [Enter]): "
+    set /p "kill_launcher=Would you like to end all MinecraftLauncher.exe processes? ([y]es / no [Enter]): "
     echo.
     REM If the user input is 'y' or 'yes', kill all MinecraftLauncher.exe processes
     echo !kill_launcher! | findstr /I /C:"y" >nul && (
         taskkill /F /IM MinecraftLauncher.exe /T
-        echo All MinecraftLauncher.exe processes have been killed. Continuing...
+        echo All MinecraftLauncher.exe processes have been stopped. Continuing...
         echo.
     ) || (
         echo Please close Minecraft Launcher and run the updater again.
