@@ -70,8 +70,6 @@ if "%ERRORLEVEL%"=="0" (
         pause
         exit /b
     )
-) else (
-    REM echo Minecraft Launcher is not running.
 )
 
 REM Check if %appdata%\.minecraft exists
