@@ -64,6 +64,7 @@ if "%ERRORLEVEL%"=="0" (
     echo !kill_launcher! | findstr /I /C:"y" >nul && (
         taskkill /F /IM MinecraftLauncher.exe /T
         echo All MinecraftLauncher.exe processes have been killed. Continuing...
+        echo.
     ) || (
         echo Please close Minecraft Launcher and run the updater again.
         pause
