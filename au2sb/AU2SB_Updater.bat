@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.0"
+set "this_updater_version=1.3.1"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -53,6 +53,25 @@ echo.
 echo AU2SB install path is %minecraft_au2sb_folder%
 echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
 echo.
+
+REM Check if MinecraftLauncher.exe is running
+tasklist /FI "IMAGENAME eq MinecraftLauncher.exe" 2>NUL | find /I /N "MinecraftLauncher.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo Minecraft Launcher is currently running. Please close it before proceeding.
+    set /p "kill_launcher=Would you like to kill all MinecraftLauncher.exe processes? ([y]es / no [Enter]): "
+    echo.
+    REM If the user input is 'y' or 'yes', kill all MinecraftLauncher.exe processes
+    echo !kill_launcher! | findstr /I /C:"y" >nul && (
+        taskkill /F /IM MinecraftLauncher.exe /T
+        echo All MinecraftLauncher.exe processes have been killed. Continuing...
+    ) || (
+        echo Please close Minecraft Launcher and run the updater again.
+        pause
+        exit /b
+    )
+) else (
+    echo Minecraft Launcher is not running.
+)
 
 REM Check if %appdata%\.minecraft exists
 if not exist "%appdata%\.minecraft" (
