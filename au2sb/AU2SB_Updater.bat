@@ -573,6 +573,7 @@ if not exist "%minecraft_au2sb_folder%\zerotier_set" (
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
     ) || (
         echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB 
+        echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
         goto skip_zerotier
     )
 ) else (
