@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.5"
+set "this_updater_version=1.3.6"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -26,6 +26,8 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 )
 REM Check AU2SB version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
+REM Check AU2SB size
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
 
 REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files.
@@ -34,6 +36,7 @@ echo.
 echo        An AU2SB profile will be created in the offical Minecraft Launcher.
 echo        If you do not yet have Minecraft installed, the launcher will be installed.
 echo        Fabric will be installed automatically if it is not already installed.
+echo        The total install size will be !AU2SB_size!GB, please ensure you have enough free space.
 echo.
 REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
 if exist "%appdata%\.minecraft_au2sb\path" (
