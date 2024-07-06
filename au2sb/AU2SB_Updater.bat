@@ -36,7 +36,7 @@ echo.
 echo        An AU2SB profile will be created in the offical Minecraft Launcher.
 echo        If you do not yet have Minecraft installed, the launcher will be installed.
 echo        Fabric will be installed automatically if it is not already installed.
-echo        The install size will be around !AU2SB_size!GB, if you don't have enough space you should
+echo        The install size will be at least !AU2SB_size!GB, if you don't have enough space you should
 echo        probably feel bad about your computer organization.
 echo.
 REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
