@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.6"
+set "this_updater_version=1.3.7"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -224,9 +224,9 @@ if not defined RAM_allocation (
 REM Trim leading and trailing spaces
 for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%a"
 for /f "tokens=* delims= " %%a in ("!RAM_allocation:~0,2!") do set "RAM_allocation=%%~a"
-if %RAM_allocation% geq 6 if %RAM_allocation% leq 16 (
-    if !RAM_allocation! lss 8 (
-        echo Warning: Allocating less than 8 GB of RAM might not be enough.
+if %RAM_allocation% geq 4 if %RAM_allocation% leq 16 (
+    if !RAM_allocation! lss 6 (
+        echo Warning: Allocating less than 6 GB of RAM might not be enough.
         set /p "proceed=Do you want to proceed? ([y]es / no [Enter]): "
         echo !proceed! | findstr /I /C:"y" >nul || goto input_loop
     )
