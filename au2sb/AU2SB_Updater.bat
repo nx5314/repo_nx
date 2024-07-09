@@ -1,6 +1,6 @@
-:: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack. It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files). If updates are available, it downloads and installs them. It also sets up a custom Minecraft profile with optimized Java arguments and manages the installation of Fabric, a mod loader. The script ensures all components are up to date and configures the game environment for AU2SB. If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
-:: Run the script in a Windows command prompt environment. It will guide you through the installation or update process with prompts.
-:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.
+:: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft profile with optimized Java arguments and manages the installation of Fabric, a mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
+:: Run the script in a Windows command prompt environment.  It will guide you through the installation or update process with prompts.
+:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6GB of free RAM is recommended to play AU2SB.
 
 @echo off
 setlocal enabledelayedexpansion
