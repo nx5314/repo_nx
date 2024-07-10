@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.7"
+set "this_updater_version=1.3.8"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -531,7 +531,7 @@ if exist "%optionsfiletemp%" del "%optionsfiletemp%"
 for /f "delims=" %%i in (%optionsfile%) do (
     set "line=%%i"
     if "!line:~0,13!"=="resourcePacks" (
-        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","fabric","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","seamless:default_seamless","a_good_place:default_animations","meadow:optifine_support","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/GUI-SimpleStylized_4.7-1.20+.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
+        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","fabric","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","seamless:default_seamless","meadow:optifine_support","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/GUI-SimpleStylized_4.7-1.20+.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,24!"=="incompatibleResourcePacks" (
         echo incompatibleResourcePacks:["file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip"]>>"%optionsfiletemp%"
     ) else (
