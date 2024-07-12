@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.9"
+set "this_updater_version=1.3.10"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -215,11 +215,19 @@ if "%proceed_with_java_install%"=="false" (
 
 REM Set RAM allocation amount
 if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
-    echo 10 > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo 8 > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    set "RAM_unset=true"
 )
 set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 :input_loop
-set /p "RAM_allocation=Please enter the amount of RAM to allocate (6-16), press Enter to use the default %RAM_allocation%GB (remembers your choice): "
+
+if "%RAM_unset%"=="true" (
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6-16), or press Enter to use the default 8GB (remembers your choice): "
+    else (
+        set /p "RAM_allocation=Press Enter to use %RAM_allocation%GB (remembers your choice), or enter a new amount of RAM to allocate (6-16): "
+    )
+)
+
 if not defined RAM_allocation (
     set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 )
