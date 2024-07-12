@@ -1,16 +1,17 @@
 :: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft profile with optimized Java arguments and manages the installation of Fabric, a mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
 :: Run the script in a Windows command prompt environment.  It will guide you through the installation or update process with prompts.
-:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6GB of free RAM is recommended to play AU2SB.
+:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6 GB of free RAM is recommended to play AU2SB.
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.11"
+set "this_updater_version=1.3.12"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
 REM Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
+    title AU2SB Updater Updating...
 	rename AU2SB_Updater.bat AU2SB_Updater_old.bat
     curl -s -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater.bat"
     echo AU2SB Updater has been updated to %latest_updater_version%
@@ -29,17 +30,39 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 REM Check AU2SB size
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
 
+REM Fetch system RAM capacity
+for /F "tokens=2 delims=:" %%a in ('systeminfo ^| findstr /C:"Total Physical Memory"') do set user_RAM=%%a
+set user_RAM=%user_RAM:~1,-3%
+set user_RAM=%user_RAM:MB=%
+set user_RAM=%user_RAM:,=%
+set /A user_RAM_GB=%user_RAM%/1024
+REM user_RAM_max caps the user to 80% of their total RAM
+set /A user_RAM_max=8*user_RAM_GB/10
+
 REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files.
 echo        Running this script as administrator is neither necessary nor recommended.
+echo.
 echo        The latest version of AU2SB is !latest_AU2SB_version!
 echo.
 echo        An AU2SB profile will be created in the offical Minecraft Launcher.
 echo        If you do not yet have Minecraft installed, the launcher will be installed.
 echo        Fabric will be installed automatically if it is not already installed.
+echo.
 echo        The install size will be at least !AU2SB_size! GB, if you don't have enough space you should
 echo        probably feel bad about your computer organization.
 echo.
+
+REM Cancel the install if the system has less than 7 GB of RAM.  I'm doing this early so nothing gets installed if this is the case.  Using 7 just in case the values are odd, but still much less than 8.
+if %user_RAM_GB% lss 7 (
+    echo.
+    echo.
+    echo Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
+    echo impossible, if not highly inadvisable.  Please upgrade your system to play.
+    pause
+    exit /b
+)
+
 REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
 if exist "%appdata%\.minecraft_au2sb\path" (
     set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
@@ -216,16 +239,54 @@ if "%proceed_with_java_install%"=="false" (
 
 REM Set RAM allocation amount
 if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
-    echo 8 > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo|set /p="8" > "%minecraft_au2sb_folder%\ram_alloc.txt"
     set "RAM_unset=true"
 )
 set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
+
+REM Warn the user if RAM capacity is less than certain values on first run
+if %user_RAM_GB% lss 8 if "%RAM_unset%"=="true" (
+    echo|set /p="6" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo.
+    echo Warning: Your system has less than 8 GB of RAM.  Performance may be impacted.
+    set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
+    echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
+    echo.
+    goto input_loop
+) else (
+    if %user_RAM_GB% lss 14 if "%RAM_unset%"=="true" (
+        echo.
+        echo Warning: Your system has less than 16 GB of RAM.  Performance may be impacted.
+        set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
+        echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
+        echo.
+        goto input_loop
+    )
+)
+
+REM Warn the user if RAM capacity is less than certain values on subsequent runs
+if %user_RAM_GB% lss 8 (
+    echo.
+    echo Warning: Your system has less than 8 GB of RAM.  Performance may be negatively impacted.
+    echo.
+) else (
+    if %user_RAM_GB% lss 14 (
+        echo.
+        echo Warning: Your system has less than 16 GB of RAM.  Performance may be negatively impacted.
+        echo.
+    )
+)
+
 :input_loop
 
+REM Prompt the user for RAM allocation
 if "%RAM_unset%"=="true" (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6-16), or press Enter to use the default 8 GB (remembers your choice): "
-    else (
-        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (6-16): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6 - %user_RAM_max%), or press Enter to use the default 8 GB (remembers your choice): "
+) else (
+    if %user_RAM_GB% lss 8 (
+        set /p "RAM_allocation=Please enter the amount of RAM to allocate (<%user_RAM_max%), or press Enter to use the default 6 GB (remembers your choice): "
+    ) else (
+        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (6 - %user_RAM_max%): "
     )
 )
 
@@ -235,7 +296,7 @@ if not defined RAM_allocation (
 REM Trim leading and trailing spaces
 for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%a"
 for /f "tokens=* delims= " %%a in ("!RAM_allocation:~0,2!") do set "RAM_allocation=%%~a"
-if %RAM_allocation% geq 4 if %RAM_allocation% leq 16 (
+if %RAM_allocation% geq 4 if %RAM_allocation% leq %user_RAM_max% (
     if !RAM_allocation! lss 6 (
         echo Warning: Allocating less than 6 GB of RAM might not be enough.
         set /p "proceed=Do you want to proceed? ([y]es / no [Enter]): "
@@ -244,7 +305,7 @@ if %RAM_allocation% geq 4 if %RAM_allocation% leq 16 (
     echo !RAM_allocation! > "%minecraft_au2sb_folder%\ram_alloc.txt"
     echo You have allocated !RAM_allocation! GB of RAM.
 ) else (
-    echo Invalid input. Please enter a number between 6 and 16.
+    echo Invalid input. Please enter a number between 6 and %user_RAM_max%.
     goto input_loop
 )
 
@@ -327,7 +388,7 @@ if "%mods_uptodate%"=="false" (
     if !mods_size! LSS 500000000 (
         echo The download failed, please report that the mods download needs to be fixed
         set "fail_state=true"
-        goto :cleanup
+        goto cleanup
     )
 
     echo Extracting mods...
@@ -346,7 +407,7 @@ REM If the file size is less than 10MB (in bytes), indicate the mods download fa
 if !config_size! LSS 10000000 (
     echo The download failed, please report that the config download needs to be fixed
     set "fail_state=true"
-    goto :cleanup
+    goto cleanup
 )
 
 echo Extracting config...
@@ -364,7 +425,7 @@ REM If the file size is less than 1MB (in bytes), indicate the mods download fai
 if !resourcepacks_size! LSS 1000000 (
     echo The download failed, please report that the resourcepacks download needs to be fixed
     set "fail_state=true"
-    goto :cleanup
+    goto cleanup
 )
 
 echo Extracting resourcepacks...
@@ -382,7 +443,7 @@ REM If the file size is less than 1 byte, indicate the mods download failed
 if !extras_size! LSS 1 (
     echo The download failed, please report that the extras download needs to be fixed
     set "fail_state=true"
-    goto :cleanup
+    goto cleanup
 )
 
 echo Extracting extras...
