@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.10"
+set "this_updater_version=1.3.11"
 title AU2SB Updater %this_updater_version%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -31,12 +31,13 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 
 REM Intro and path prompt
 echo        This installer/updater script will automatically download the required mods and config files.
+echo        Running this script as administrator is neither necessary nor recommended.
 echo        The latest version of AU2SB is !latest_AU2SB_version!
 echo.
 echo        An AU2SB profile will be created in the offical Minecraft Launcher.
 echo        If you do not yet have Minecraft installed, the launcher will be installed.
 echo        Fabric will be installed automatically if it is not already installed.
-echo        The install size will be at least !AU2SB_size!GB, if you don't have enough space you should
+echo        The install size will be at least !AU2SB_size! GB, if you don't have enough space you should
 echo        probably feel bad about your computer organization.
 echo.
 REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
@@ -222,9 +223,9 @@ set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 :input_loop
 
 if "%RAM_unset%"=="true" (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6-16), or press Enter to use the default 8GB (remembers your choice): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6-16), or press Enter to use the default 8 GB (remembers your choice): "
     else (
-        set /p "RAM_allocation=Press Enter to use %RAM_allocation%GB (remembers your choice), or enter a new amount of RAM to allocate (6-16): "
+        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (6-16): "
     )
 )
 
@@ -322,7 +323,7 @@ if "%mods_uptodate%"=="false" (
 
     REM Check the size of the downloaded file
     for %%A in ("%temp%\au2sb_mods.zip") do set mods_size=%%~zA
-    REM If the file size is less than .5GB (in bytes), indicate the mods download failed
+    REM If the file size is less than .5 GB (in bytes), indicate the mods download failed
     if !mods_size! LSS 500000000 (
         echo The download failed, please report that the mods download needs to be fixed
         set "fail_state=true"
