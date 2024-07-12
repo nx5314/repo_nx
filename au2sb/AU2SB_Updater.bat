@@ -4,14 +4,29 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.3.12"
-title AU2SB Updater %this_updater_version%
+set "this_updater_version=1.4"
+
+REM Title presets
+set "title_normal=AU2SB Updater %this_updater_version%"
+set "title_updating_updater=AU2SB Updater %this_updater_version% Updating to %latest_updater_version%..."
+set "title_prompt=Input Required! - %title_normal%"
+set "title_installing=Installing... - %title_normal%"
+set "title_warning=Warning! - %title_normal%"
+set "title_error=Error! - %title_normal%"
+set "title_failed=Install Failed! - %title_normal%"
+set "title_cleaning=Cleaning up... - %title_normal%"
+set "title_finished=Finished! - %title_normal%"
+set "title_stopped=Stopped! - %title_normal%"
+
+set "exclaim=^!"
+
+title %title_normal%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
 REM Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
-    title AU2SB Updater Updating...
+    title %title_updating_updater%
 	rename AU2SB_Updater.bat AU2SB_Updater_old.bat
     curl -s -L "https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/AU2SB_Updater.bat" --output "%updater_download_path%\AU2SB_Updater.bat"
     echo AU2SB Updater has been updated to %latest_updater_version%
@@ -59,6 +74,7 @@ if %user_RAM_GB% lss 7 (
     echo.
     echo Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
     echo impossible, if not highly inadvisable.  Please upgrade your system to play.
+title %title_stopped%
     pause
     exit /b
 )
@@ -71,7 +87,9 @@ if exist "%appdata%\.minecraft_au2sb\path" (
 echo        Please enter the folder path if you would like to use a custom folder location, or
 echo        press Enter if you would like to use the default .minecraft_au2sb folder. (recommended)
 echo.
+title %title_prompt%
 set /p "minecraft_au2sb_folder=Path: "
+title %title_normal%
 :skip_path_prompt
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
@@ -96,6 +114,7 @@ if "%ERRORLEVEL%"=="0" (
         echo.
     ) || (
         goto kill_launcher_again
+title %title_stopped%
         echo Please close Minecraft Launcher and run the updater again.
         pause
         exit /b
@@ -105,7 +124,9 @@ if "%ERRORLEVEL%"=="0" (
 REM Check if %appdata%\.minecraft exists
 if not exist "%appdata%\.minecraft" (
     echo Can't seem to find the base .minecraft folder, something weird going on or do you not have the game installed?
+title %title_prompt%
     set /p "install_minecraft=Would you like to install the Minecraft Launcher? ([y]es / no [Enter]): "
+title %title_installing%
     echo.
     REM If the user input is 'y' or 'yes', install Minecraft Launcher
     echo !install_minecraft! | findstr /I /C:"y" >nul && (
@@ -130,11 +151,15 @@ REM Make sure it exists
 if not exist %launcher_profiles% (
     echo.
     echo Whoa, you don't seem to have any launcher profiles I can read, have you not run the Minecraft Launcher even once?
+title %title_prompt%
     set /p "recheck_profiles=Try again? ([y]es / no [Enter]): "
+title %title_installing%
     echo !recheck_profiles! | findstr /I /C:"y" >nul && (
         goto recheck_launcher_profiles
     ) || (
+title %title_prompt%
         set /p "create_new_file=Would you like to create a new launcher_profiles.json file? ([y]es / no [Enter]): "
+title %title_installing%
         echo !create_new_file! | findstr /I /C:"y" >nul && (
             echo Creating new launcher_profiles.json file...
             (
@@ -175,6 +200,7 @@ if not exist %launcher_profiles% (
             goto recheck_launcher_profiles
         )
         echo Please ensure %appdata%\.minecraft\launcher_profiles.json exists before attempting installation again
+title %title_stopped%
         pause
         exit /b
     )
@@ -215,7 +241,9 @@ set proceed_with_java_install=null
 if "%need_java%"=="true" (
     echo.
     set "install_java=null"
+title %title_prompt%
     set /p "install_java=Would you like to install Java? ([y]es / no [Enter] = skip, fabric will not be installed): "
+title %title_normal%
     echo.
 )
 REM If the user input contains 'y' or 'Y', set the proceed variable to true
@@ -223,91 +251,119 @@ echo %install_java% | findstr /I /C:"y" >nul && (set "proceed_with_java_install=
 REM If proceed_with_java_install is true, install java
 if "%proceed_with_java_install%"=="true" (
     echo Java will now be installed
+title %title_installing%
     winget.exe install --id EclipseAdoptium.Temurin.21.JRE --exact
     echo Java should now be installed, please exit this terminal window and run this installer again to finish installing AU2SB
+title %title_stopped%
     pause
     exit /b
 )
 
 if "%proceed_with_java_install%"=="false" (
+title %title_stopped%
     echo Java will not be installed, please install it yourself and run this installer again to finish installing AU2SB
     pause
     exit /b
 )
 
 :fabric_is_installed
+title %title_installing%
 
 REM Set RAM allocation amount
 if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
     echo|set /p="8" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    set "RAM_allocation=8"
     set "RAM_unset=true"
 )
-set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 
 REM Warn the user if RAM capacity is less than certain values on first run
 if %user_RAM_GB% lss 8 if "%RAM_unset%"=="true" (
-    echo|set /p="6" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo|set /p="5" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    set "RAM_allocation=5"
     echo.
-    echo Warning: Your system has less than 8 GB of RAM.  Performance may be impacted.
+    echo Warning: Your system has less than 8 GB of RAM.  Performance may be negatively impacted.
+title %title_prompt%
     set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
+title %title_installing%
     echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
     echo.
     goto input_loop
 ) else (
     if %user_RAM_GB% lss 14 if "%RAM_unset%"=="true" (
         echo.
-        echo Warning: Your system has less than 16 GB of RAM.  Performance may be impacted.
+        echo Warning: Your system has less than 16 GB of RAM.  Performance may be negatively impacted.
+title %title_prompt%
         set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
+title %title_installing%
         echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
         echo.
         goto input_loop
     )
 )
+set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 
 REM Warn the user if RAM capacity is less than certain values on subsequent runs
 if %user_RAM_GB% lss 8 (
+title %title_warning%
     echo.
     echo Warning: Your system has less than 8 GB of RAM.  Performance may be negatively impacted.
     echo.
+    @timeout /t 4 /nobreak >nul
 ) else (
     if %user_RAM_GB% lss 14 (
+title %title_warning%
         echo.
         echo Warning: Your system has less than 16 GB of RAM.  Performance may be negatively impacted.
         echo.
+        @timeout /t 4 /nobreak >nul
     )
 )
 
 :input_loop
+title %title_prompt%
 
 REM Prompt the user for RAM allocation
+if "%RAM_unset%"=="true" if %user_RAM_GB% lss 8 (
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press Enter to use the default 5 GB (remembers your choice): "
+    goto ram_next
+)
 if "%RAM_unset%"=="true" (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (6 - %user_RAM_max%), or press Enter to use the default 8 GB (remembers your choice): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press Enter to use the default 8 GB (remembers your choice): "
 ) else (
     if %user_RAM_GB% lss 8 (
-        set /p "RAM_allocation=Please enter the amount of RAM to allocate (<%user_RAM_max%), or press Enter to use the default 6 GB (remembers your choice): "
+        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (<%user_RAM_max%): "
     ) else (
-        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (6 - %user_RAM_max%): "
+        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (4 - %user_RAM_max%): "
     )
 )
+:ram_next
+title %title_installing%
 
 if not defined RAM_allocation (
     set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 )
 REM Trim leading and trailing spaces
-for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%a"
+for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%~a"
 for /f "tokens=* delims= " %%a in ("!RAM_allocation:~0,2!") do set "RAM_allocation=%%~a"
 if %RAM_allocation% geq 4 if %RAM_allocation% leq %user_RAM_max% (
     if !RAM_allocation! lss 6 (
+title %title_warning%
         echo Warning: Allocating less than 6 GB of RAM might not be enough.
+        @timeout /t 1 /nobreak >nul
+title %title_prompt%
         set /p "proceed=Do you want to proceed? ([y]es / no [Enter]): "
         echo !proceed! | findstr /I /C:"y" >nul || goto input_loop
     )
-    echo !RAM_allocation! > "%minecraft_au2sb_folder%\ram_alloc.txt"
+title %title_installing%
+    echo|set /p="!RAM_allocation!" > "%minecraft_au2sb_folder%\ram_alloc.txt"
     echo You have allocated !RAM_allocation! GB of RAM.
 ) else (
-    echo Invalid input. Please enter a number between 6 and %user_RAM_max%.
+    echo Invalid input. Please enter a number between 4 and %user_RAM_max%.
     goto input_loop
 )
+
+
+title %title_installing%
 
 REM Invoke PowerShell to add the AU2SB profile to the launcher_profiles.json file
 powershell -Command "$newAU2SBProfile = @{ 'created' = '1970-01-01T00:00:00.002Z'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwwAADsMBx2+oZAAAC+ZJREFUeJztWXmMXVUZ/527vGWWN/tMZ1o6nekOSMXQmqISwIVqK9JCIAYay2KAmEpiFIMIMWBELGokgSiLEQ0GoiHYmpAwYEUiBAVCKRStgWHWzvrem7fdd3d/59w3w3SHP/jrvS9zZ+4799xzvu/3/b7lvDEOHjyIahYDVS41AFDlUgMAVS41AFDlUgMAVS41AFDlUgMAVS41AFDlUgMAVS41AFDlUgMAVS41AOZvwjAUqCIRQoTyr3HsQLXJAgDFYrHx42WBxiv4GOZ+1NmATmcn6+vz8l4BMD4+3vutW3a/0r+iq17XtOCkVAhD6LqO0ZExzBVsrF/Xh1DNjsZHhkaR4fjZ6/s5EsphCE3g/cFxWF4X2lobZagdv+yiezIRuXQeaxPT6OheA9+mT+bJudg/ciwQ0BMhpgffglFnorV7HbxSGCGysPAx7+uelp8dLN5y7y8/3d7TM6QAGBsb67tua3/XzTsvguf5VCKaL20TFaXkalL3mGngZw8N8D7ArTdeAtf11Fw5vofjvu/j+zfLcV+Nmxy//9F9GHi/H7uu3hHNFx8YIu80TavgG8I0DDzx9F6sfe1F3PGrG6FL0Co6BYvAk3M1U0d5Oofbtr2MZrMRd/ziQuhtx89X+ktc5PyZOdy9Y0/D4Nh43wIAkgE9LTHUayXPClxdky/wJ84XPD/kFShF5S/NF5iZmsaZq7tQhyI4X21gBBrycxks625GkuMi8CrjBoLyNHq6NqGnuxu261YAjYwPggCO46hPCgAC1tySgntYIGkeRry5FXAqoJmxD8CTtpkCKVHE0qVxvP/PQcTwFupalgC2Fy1uxiW6gMv16RgYGpKB5Xd1ecb4+ETvQghIBqzqN1AsOShZtmAYKKP3v/IeVi1vxareNnou4FpCKfyf96Zx7rpu5o0ySrYLCZg06shUHit6Wjhuw6qMS+/OFQhacRqHDrxBY93IBv4KqFR9YyOWrZChFJChAjEyoCERQ4FguCUPJnWSz9y8jX8PlJDTY9DDsMJurs9nmeY2ZMNRlDI2kpYLn4CFZNrrz09jOqdj88YQrWua4ZVdGEJD+8o2vDE23HcUAI1nxlEqFIVVdkhDHXM5Cztvexp//Mk29HY1oCjHGedlLv7Ca2O49msbYJVKsLioBCxgvIxPZqFjGawix+kFTUT0C9CA5//yLK/fHxf/X995A2761LnwSdsg8GkYWcP9i3zmlwuks4mQztB8B898+7e4p3TcElhVuay5LITXhIA6khw4+Nwf8M3fuTj85AVoW3kOQoKPhBCd3QbG3hyrAMDMf2R8bEVc70chVxQ2FY+ZGrI5G1/+yvlob6ojtQuwHR8eKTRH76rYZmIp5iUAHhOgRpb6+N9wmvnGJ5DRuGSM9NXM7BxaV67FxrWfg+sFBEwgkYhjejqNNWtWobO1ReUUl+FRtGw0NzTgiAwPp0z6Wgj4Dj9gza6tuGYqxXgP4KscGyXf9NQQDg28RAAImFtSAMAE+s/+Ai75ZIr6WAyjHNwCWWZ1ifala3DkmeEVkkNG2baTDVquV/gecnNF4RPtEheO63Hc9Y1zEVhzyGTyKkYNApBJF6P4pbfyuRKB8WAQgBKZMJlxVawVCEzZngdAx5F3DuOmG27ApZduhWWVkaTxqcZ6hkDAUPMxm8miiZ/jsRgaGxvQ3pxCAdJ2Gu/GENhkRujh8t0bcEWsCZJTQuYMmXzJlmcfL2PbABlAfeCWIbiuS8A2bV2NP1+2nDlhFE55BILrPHjnpBiwdazws71u2U4aMzMzS1IxpzNwbRrkKU8oaogSRG6GC2mylqkEJZmRVmBIfrpkDJnB3GAaAvmiszBezBcJgA9Np6qhjoPDwKVtzVjes0QBIBkjr1gsrkLE9SIWSYuSyQRSZMC0ZBkNMUl9nSAJhpkwXlXrO16ZIUP9WO8EPZ10RxWZCzNp+LkUK1kEkGkcRDx8E74Rh52n9508rvzOhbho1sA9V+3vnMymlxiyAjQnkXQsm6EWqBQrKTo2U0K64GD98iYVyzLGPVaF2XQEgM/MXaChDjeLydDIR6ERuBIYAsAyKNfhU2VMUyqlPM+MpoyW1ztvv41sNsPMb6p+IuCzeJwZfXBIMhj/OtyB+nS9yg+VzEnW6OivG0H7co/sMSHirBaJFJ9lkE+X4BdyKuHrhofZ95vw3/Q6NIscVvUdYlmLoyP1N5HIZcMWRyTHJyd6jYmJiTPqmArLlhXYrqdLI+Kk1QuvDeEfByax56aNqqQoAGIEIFNQhrp2mQD4qlq4EoCsVRm3UWAOcBQAGtyw0g9Ij7PEea4RlUfe79u3Dz/f89PjsxrasHlZP7bsfvyoUdmuy271xR8IdHZvYGiUCZqGhOEqBuSzDvyipfKDRl2dzCAu3rUf36sDbv/TetXIWSqJxoOujaY+MTR5hjEyMrIyLgJm7nJo21GJcui5bL6MTetaYZOy0khJz0CGQCUHuExWJY8lR/YJDIEiS9a6TzCvyBxCZrheqBjgVvq8ZCKhmhxZ5xUAvG9vb+OTpdj8mfXMJU7UrPCd2RwNGRnCZRedjzDRoMqg9D/9Io7MsUSHs/Dys2SGqbwd0zykmGvmsmQF80/A0PMcwTwWYvfFF8CPmyinhznPlQRkbyLC9k4Nh0ZGVxrDw8Orz9YMlIq+kPEsa7fMA4NHitjQ10JmBCpzSzNoLzJ5DyvbDXqahjvReIlx2dzYgjuvXIPc+DhyOYaJpqvQcYIop9TVJUlLnUboykgp1127CzuvuVq1ywpg7luXSOK5/X/HVVfswIHrd6Kzv4f7uJUQYJHUTGiZ92Blf0We96nOkrzCOuaDuTn2DnkyIMbmK6QztXrcetuXyAZSYOKvBOdlrtAJoYeirUXD8PDYamN0dLTvvLUmHHYhzNuR0vTeoQkHm880IcfceQ6yl86xvHU0J+BrmmqNFQK6SQBzKB6eJbwxbmyoZ7pMcJXOLRYzVYsu88B866tywgmks6Nd/Y2/+yC70zyNXNQ9y/In82XI0unMMAkyBFBGN2HIznG8kIFeH2PvwK5SKyM+8cMIXNHEvyaB4fOYLjoa88gfGO0zZsYGzyqtXIKpvK0xCbJb1Nj0RP09cWAH5yhApALSoCn2BzJjp0l5/9hjk9CjtrWiqE4qWl6keZ5hMT2TYRWwjur9F4vsMpPJJBNjlGjTTVuQbGxn9+jJQoSovw0rZ5tKny/zTKeDtnMGMFkqI9uwnQAkVNhE8xe8p1CM2m1di/dPQTz27FmG2dA68djAcGNdIs7O1J8/RxE9gadfmkCqPrugqIzdrGx/2RQNTQ3jdCKotc96HIt14Lt3/BqJ1JOq9gtxjGKoGCcPOAQ3n8vgvIYuPPzY6xCJeonMSfeQb2tEZHi6jARD6N77X4Uvy6N6Ik4wXzZPRmCVS1pHX++EsWvXrvvu+fHdv+HGLIN+ZUGhvJxjM2PGnEUbRYckn4qWGJeahlOLbIMDyRSBcmmOlcBXJzRxAsUWlCPwpVJBVSJz4l2c6muaSCf2Oa78PiOFzhZ6d/gQtBAn2SESVqdwLK1j2+0/us/YsmXLEw8/9NDtszNTy3kGIAsZ6CKii7zyZYaFLqJ4rxyJpQeLZIHsAMNTKFg57hFMJifbQT7Mn/D7gMUiQZYHqQRLs07vh7LTwYnfERUAyjarCkGoZ4sMvQmn8gsTcFh0Qj3Wu2R40xc//4TR0NCQ23H55Y88+MADd/lBqB21GZWVPb4fCBxLVdkA+UGIkym3eG6oOarP99lun5iYRxsl1+VBHPIrBVkZxEn2UPmXL+TKPFvoUXw77sn1qcwXGUtg8xXbHknU1+fUaXD79u2PPvXUU9dnMpl2Hi680+j4kUXjEbauLq5ywulERnujDBM7iXGmpBCnfyeMRUCM+6d2h5zKRGfUtTbPfPar2x6VA4bsrDo7O8f37t27nl4y8TGJEPqHn6uuqPn6MK5Y4OeHnG+YpmvGYpa03ZhvL9mDW/JClYi0WdquQmAeBFSR1P4vUJHav8ZQ5VIDAFUuNQBQ5VIDAFUuNQBQ5VIDAFUuNQBQ5VL1APwf5jEFXkOHPyoAAAAASUVORK5CYII='; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB'; 'type' = 'custom' }; $jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; if ($jsonContent.profiles.PSObject.Properties.Name -contains 'AU2SB') { $jsonContent.profiles.AU2SB = $newAU2SBProfile } else { $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name 'AU2SB' -Value $newAU2SBProfile -Force }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
@@ -353,8 +409,6 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
 )
 
 :continue
-REM current_mods_url = "!current_mods_url!"
-REM mods_url = "%mods_url%"
 REM Compare the contents of the file with mods_url
 if "!current_mods_url!"=="!mods_url!" (
     REM If they are the same, set mods_uptodate to true
@@ -370,7 +424,9 @@ REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
     echo Your mods appear to be up-to-date.
+title %title_prompt%
     set /p "override_mods=Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
+title %title_installing%
     echo.
     REM If the user input is 'y' or 'yes', set mods_uptodate to false
     echo !override_mods! | findstr /I /C:"y" >nul && (set "mods_uptodate=false" && echo Mods status overruled) || (set "mods_uptodate=true" && echo Skipping mods && goto skip_mods)
@@ -620,6 +676,7 @@ if not exist "%minecraft_au2sb_folder%\keybinds_set" (
 )
 
 :cleanup
+title %title_cleaning%
 REM Delete the zips
 echo Cleaning up leftovers...
 if "%mods_uptodate%"=="false" (
@@ -634,6 +691,7 @@ REM Exit if in failed state
 if "%fail_state%"=="true" (
     echo.
     echo.
+title %title_failed%
     echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference
     pause
     exit /b
@@ -641,10 +699,12 @@ if "%fail_state%"=="true" (
 
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
+title %title_prompt%
     set /p "zerotier_prompt=Do you still need to configure ZeroTier? ([y]es / no [Enter]): "
     echo.
     REM If the user input is 'y' or 'yes', install zerotier
     echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
+title %title_installing%
         echo Installing ZeroTier now... 
         winget.exe install --id ZeroTier.ZeroTierOne --exact
         REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
@@ -659,18 +719,19 @@ if not exist "%minecraft_au2sb_folder%\zerotier_set" (
 )
 :skip_zerotier
 
+title %title_finished%
 echo.
 REM Check the flag and display the appropriate message
 if "!is_update!"=="true" (
-    echo AU2SB updated
+    echo AU2SB updated!exclaim!
 ) else (
-    echo AU2SB installed
+    echo AU2SB installed!exclaim!
 )
 echo.
-echo        Start your game with the AU2SB profile in the Minecraft Launcher
-echo        The game may take a moment to launch, it will ding when finished
+echo        Start your game with the AU2SB profile in the Minecraft Launcher.
+echo        The game will take a few moments to launch, it will ding when finished.
 echo.
-echo        If there were any errors in your installation please let me know
+echo        If there were any errors in your installation please let me know.
 echo.
 endlocal
 pause
