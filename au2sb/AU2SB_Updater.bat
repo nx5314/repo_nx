@@ -1,22 +1,22 @@
-:: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft profile with optimized Java arguments and manages the installation of Fabric, a mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
+:: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation of Fabric, a mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
 :: Run the script in a Windows command prompt environment.  It will guide you through the installation or update process with prompts.
 :: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6 GB of free RAM is recommended to play AU2SB.
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.4.1"
+set "this_updater_version=1.4.2"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
 set "title_updating_updater=AU2SB Updater %this_updater_version% Updating to %latest_updater_version%..."
-set "title_prompt=Input Required! - %title_normal%"
+set "title_prompt=Input Required^! - %title_normal%"
 set "title_installing=Installing... - %title_normal%"
-set "title_warning=Warning! - %title_normal%"
-set "title_error=Error! - %title_normal%"
-set "title_failed=Install Failed! - %title_normal%"
+set "title_warning=Warning^! - %title_normal%"
+set "title_error=Error^! - %title_normal%"
+set "title_failed=Install Failed^! - %title_normal%"
 set "title_cleaning=Cleaning up... - %title_normal%"
-set "title_finished=Finished! - %title_normal%"
-set "title_stopped=Stopped! - %title_normal%"
+set "title_finished=Finished^! - %title_normal%"
+set "title_stopped=Stopped^! - %title_normal%"
 
 set "exclaim=^!"
 
@@ -55,6 +55,7 @@ REM user_RAM_max caps the user to 80% of their total RAM
 set /A user_RAM_max=8*user_RAM_GB/10
 
 REM Intro and path prompt
+echo.
 echo                                        The latest version of AU2SB is !latest_AU2SB_version!
 echo.
 echo.
@@ -309,14 +310,14 @@ title %title_warning%
     echo.
     echo Warning: Your system has less than 8 GB of RAM.  Performance may be negatively impacted.
     echo.
-    @timeout /t 4 /nobreak >nul
+    @timeout /t 3 /nobreak >nul
 ) else (
     if %user_RAM_GB% lss 14 (
 title %title_warning%
         echo.
         echo Warning: Your system has less than 16 GB of RAM.  Performance may be negatively impacted.
         echo.
-        @timeout /t 4 /nobreak >nul
+        @timeout /t 3 /nobreak >nul
     )
 )
 
@@ -373,7 +374,7 @@ REM powershell time
 REM remove older AU2SB profile entry
 powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 REM new AU2SB profile entry
-powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'Gamma %latest_AU2SB_version%'; 'type' = 'custom' }; $jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name '%latest_AU2SB_version%' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
+powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB %latest_AU2SB_version%'; 'type' = 'custom' }; $jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name '%latest_AU2SB_version%' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 
 
 REM Fetch the URL for the downloads
@@ -639,15 +640,15 @@ if not exist "%base_minecraft_folder%\options.txt" (
         echo key_key.hotbar.7:key.keyboard.7
         echo key_key.hotbar.8:key.keyboard.8
         echo key_key.hotbar.9:key.keyboard.9
-        echo soundCategory_master:1.0
+        echo soundCategory_master:0.5
         echo soundCategory_music:1.0
         echo soundCategory_record:1.0
         echo soundCategory_weather:1.0
-        echo soundCategory_block:1.0
-        echo soundCategory_hostile:1.0
-        echo soundCategory_neutral:1.0
-        echo soundCategory_player:1.0
-        echo soundCategory_ambient:1.0
+        echo soundCategory_block:0.7
+        echo soundCategory_hostile:0.5
+        echo soundCategory_neutral:0.25
+        echo soundCategory_player:0.32
+        echo soundCategory_ambient:0.5
         echo soundCategory_voice:1.0
         echo modelPart_cape:true
         echo modelPart_jacket:true
@@ -670,6 +671,8 @@ for /f "delims=" %%i in (%optionsfile%) do (
         echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","fabric","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","seamless:default_seamless","meadow:optifine_support","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/GUI-SimpleStylized_4.7-1.20+.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,24!"=="incompatibleResourcePacks" (
         echo incompatibleResourcePacks:["file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip"]>>"%optionsfiletemp%"
+    ) else if "!line:~0,16!"=="glDebugVerbosity" (
+        echo glDebugVerbosity:0>>"%optionsfiletemp%"
     ) else (
         echo !line!>>"%optionsfiletemp%"
     )
@@ -700,7 +703,7 @@ if "%fail_state%"=="true" (
     echo.
     echo.
 title %title_failed%
-    echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference
+    echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
     pause
     exit /b
 )
@@ -708,17 +711,18 @@ title %title_failed%
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
 title %title_prompt%
-    set /p "zerotier_prompt=Do you still need to configure ZeroTier? ([y]es / no [Enter]): "
+    set /p "zerotier_prompt=Do you still need to install ZeroTier? ([y]es / no [Enter]): "
     echo.
     REM If the user input is 'y' or 'yes', install zerotier
     echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
 title %title_installing%
-        echo Installing ZeroTier now... 
+        set "zerotier_note=true"
+        echo Installing ZeroTier now...
         winget.exe install --id ZeroTier.ZeroTierOne --exact
         REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
     ) || (
-        echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB 
+        echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
         goto skip_zerotier
     )
@@ -729,31 +733,30 @@ title %title_installing%
 
 title %title_finished%
 echo.
-REM Check the flag and display the appropriate message
-if "!is_update!"=="true" (
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo AU2SB updated!exclaim!
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+echo.
+REM Check the variables and display the appropriate messages
+if "%is_update%"=="true" (
+echo        AU2SB updated!exclaim!
 ) else (
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo.
-    echo AU2SB installed!exclaim!
+echo        AU2SB installed!exclaim!
+)
+echo.
+if "%zerotier_note%"=="true" (
+echo        You will need to configure ZeroTier manually before playing AU2SB.
+echo.
 )
 echo.
 echo        Start your game with the AU2SB profile in the Minecraft Launcher.
 echo        The game will take a few moments to launch, it will ding when finished.
+echo        If the game appears to be "not responding" on the loading screen please
+echo        wait for a moment, it is likely still loading.
 echo.
 echo        If there were any errors in your installation please let me know.
 echo.
@@ -765,5 +768,5 @@ echo.
 echo.
 echo.
 echo.
-endlocal
 pause
+exit /b
