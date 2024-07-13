@@ -8,7 +8,7 @@ set "this_updater_version=1.4.2"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
-set "title_updating_updater=AU2SB Updater %this_updater_version% Updating to %latest_updater_version%..."
+set "title_updating_updater=Updating Updater to %latest_updater_version%..."
 set "title_prompt=Input Required^! - %title_normal%"
 set "title_installing=Installing... - %title_normal%"
 set "title_warning=Warning^! - %title_normal%"
