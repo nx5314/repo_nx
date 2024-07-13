@@ -753,14 +753,17 @@ echo        You will need to configure ZeroTier manually before playing AU2SB.
 echo.
 )
 echo.
-echo        Start your game with the AU2SB profile in the Minecraft Launcher.
 echo        The game will take a few moments to launch, it will ding when finished.
-echo        If the game appears to be "not responding" on the loading screen please
-echo        wait for a moment, it is likely still loading.
+echo        If the game appears to be "not responding" on the loading screen please wait for a
+echo        moment, it is likely still loading.
 echo.
-echo        If there were any errors in your installation please let me know.
+echo        You can check for the latest version by running this updater before you start your game
+echo        and compare to your version listed in the Minecraft Launcher, it is listed at the start
+echo        of the updater.
 echo.
 echo.
+echo.
+echo        Start your game with the AU2SB profile in the Minecraft Launcher.
 echo.
 echo.
 echo.
