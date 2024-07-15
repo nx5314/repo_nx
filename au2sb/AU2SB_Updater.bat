@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.4.2.2"
+set "this_updater_version=1.4.2.3"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -326,16 +326,16 @@ title %title_prompt%
 
 REM Prompt the user for RAM allocation
 if "%RAM_unset%"=="true" if %user_RAM_GB% lss 8 (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press Enter to use the default 5 GB (remembers your choice): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press [Enter] to use the default 5 GB (remembers your choice): "
     goto ram_next
 )
 if "%RAM_unset%"=="true" (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press Enter to use the default 8 GB (remembers your choice): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press [Enter] to use the default 8 GB (remembers your choice): "
 ) else (
     if %user_RAM_GB% lss 8 (
-        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (<%user_RAM_max%): "
+        set /p "RAM_allocation=Press [Enter] to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (<%user_RAM_max%): "
     ) else (
-        set /p "RAM_allocation=Press Enter to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (4 - %user_RAM_max%): "
+        set /p "RAM_allocation=Press [Enter] to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (4 - %user_RAM_max%): "
     )
 )
 :ram_next
@@ -370,11 +370,13 @@ title %title_installing%
 set "AU2SB_created_date=1999-03-20T00:00:00.002Z"
 set "AU2SB_icon=data:image/png;base64,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"
 
+set "profile_suffix= %latest_AU2SB_version%"
+
 REM powershell time
 REM remove older AU2SB profile entry
 powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 REM new AU2SB profile entry
-powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB %latest_AU2SB_version%'; 'type' = 'custom' }; $jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name '%latest_AU2SB_version%' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
+powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB%profile_suffix%'; 'type' = 'custom' }; $jsonContent = Get-Content -Path '%launcher_profiles%' | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name 'AU2SB' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path '%launcher_profiles%'"
 
 
 REM Fetch the URL for the downloads
@@ -434,7 +436,7 @@ if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
     echo Your mods appear to be up-to-date.
 title %title_prompt%
-    set /p "override_mods=Do you want to override and download mods anyway? ([y]es / no [Enter] = config only): "
+    set /p "override_mods=Do you want to override and redownload mods anyway? ([y]es / no [Enter] = config only): "
 title %title_installing%
     echo.
     REM If the user input is 'y' or 'yes', set mods_uptodate to false
