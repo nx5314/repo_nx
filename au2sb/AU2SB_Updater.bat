@@ -20,6 +20,11 @@ set "title_stopped=Stopped^! - %title_normal%"
 
 set "exclaim=^!"
 
+REM Define the path to the launcher_profiles.json file
+set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
+
+set "startup_selection=0"
+
 title %title_normal%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -51,59 +56,137 @@ set user_RAM=%user_RAM:~1,-3%
 set user_RAM=%user_RAM:MB=%
 set user_RAM=%user_RAM:,=%
 set /A user_RAM_GB=%user_RAM%/1024
-REM user_RAM_max caps the user to 80% of their total RAM
-set /A user_RAM_max=8*user_RAM_GB/10
+REM user_RAM_max caps the user to 90% of their total RAM
+set /A user_RAM_max=9*user_RAM_GB/10
 
-REM Intro and path prompt
+REM Presence of "%appdata%\.minecraft_au2sb\path" determines existing_install
+if exist "%appdata%\.minecraft_au2sb\path" (
+    set "existing_install=true"
+) else (
+    set "existing_install=false"
+)
+
+REM Make folder
+if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
+
+REM Intro
 echo.
-echo                                        The latest version of AU2SB is !latest_AU2SB_version!
+echo                       z444444444444m 144444  44444m ^|444444444444m 1444444444444m 1444444444444m
+echo                       $#####44#####L $#####  #####F ^|4444444EEEEE@ j$$$$$A444444R j$$$$$R44$$$$E
+echo                       KKKKKF jKKKKKW EKKKKK  KKKKKF         EEEEE@ j#####W         #####F 4#####
+echo                      jKKKKKKKKKKKKK  KKKKKW jKKKKKH $@@@@@@@EEEEE@ jKKKKK#RRRRRRR  #KKKK$R#KKKE
+echo                      jHHHHHMMHHHHHH  HHHHHt jHHHHHH $EEEEEMMMMMMMM  MMMMMMM#KKKKKW #KKKKKMMKKKHHK
+echo                      K]]]]H  ]]]]]K j]]]]]H ]]]]]]  $EEEEE                 jHHHHHH jHHHHHW #HHHHH
+echo                      ]]]]]H ]]]]]]H ]]]]]]HHH]]]]]  $EEEEE@@@@@@@@  KKKKKKKKNNNNNK jNNNNNKKKNNNNNH
+echo                     ]HHHHH` (HHHHH  [HHHHHHHHHHHHH  RRRRRRRRRRRRRR  HHHHHHHHHHHHHH  HHHHHHHHHHHHHK
+echo                                                     ][[[[[[[[[[[[[  ]]]]]]]]]]]]]  ]]]]]]]]]]]]]H
+echo                                                     ][[[[[[[[[[[[[ ]]]]]]]]]]]]][  ]]]]]]]]]]]]H
 echo.
-echo.
-echo        This installer/updater script will automatically download the required mods and config files.
-echo        Running this script as administrator is neither necessary nor recommended.
-echo.
-echo        An AU2SB profile will be created in the offical Minecraft Launcher.
-echo        If you do not yet have Minecraft installed, the launcher will be installed.
-echo        Fabric will be installed automatically if it is not already installed.
-echo.
-echo        The install size will be at least !AU2SB_size! GB, if you don't have enough space you should
-echo        probably feel bad about your computer organization.
+echo                                        The latest version of AU2SB is %latest_AU2SB_version%
 echo.
 
 REM Cancel the install if the system has less than 7 GB of RAM.  I'm doing this early so nothing gets installed if this is the case.  Using 7 just in case the values are odd, but still much less than 8.
 if %user_RAM_GB% lss 7 (
     echo.
     echo.
-    echo Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
-    echo impossible, if not highly inadvisable.  Please upgrade your system to play.
+echo        Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
+echo        impossible, if not highly inadvisable.  Please upgrade your system to play.
+echo        Or maybe it would work, I don't know, probably not though.  Doubt anyone will see this anyway.
 title %title_stopped%
     pause
     exit /b
 )
 
-REM If "%appdata%\.minecraft_au2sb\path" exists, read the first line and set that as the value of %minecraft_au2sb_folder% then goto skip_path_prompt
-if exist "%appdata%\.minecraft_au2sb\path" (
-    set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
-    goto skip_path_prompt
+REM show options if existing install
+if "%existing_install%"=="true" (
+    :retry_selection
+set "startup_selection=0"
+echo    Option Selection
+echo        1. Update
+echo        2. Modify and update
+echo        3. Uninstall
+echo        4. Move install location
+    title %title_prompt%
+    set /p "startup_selection=Option: "
+    if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" (
+        echo Invalid selection, please enter a number between 1 and 4.
+        echo.
+        goto retry_selection
+    )
+    title %title_normal%
 )
-echo        Please enter the folder path if you would like to use a custom folder location, or
-echo        press Enter if you would like to use the default .minecraft_au2sb folder. (recommended)
+
+if "%startup_selection%"=="1" (
+    goto skip_prompt
+)
+
+REM if "%startup_selection%"=="2" ()
+
+if "%startup_selection%"=="3" (
 echo.
 title %title_prompt%
+set /p "uninstall_confirm=Please confirm to uninstall ([y]es / no [Enter]): "
+title %title_normal%
+    REM If the user input is 'y' or 'yes', uninstall
+    echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
+        goto skip_prompt
+    ) || (
+        echo.
+        goto retry_selection
+    )
+)
+
+if "%startup_selection%"=="4" (
+echo.
+set /p old_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
+echo Current path = !old_minecraft_au2sb_folder!
+echo.
+goto path_prompt
+)
+
+
+REM Prompt for path
+if "%existing_install%"=="true" (
+    goto skip_prompt
+)
+echo.
+echo.        This installer/updater script will automatically download the required mods and config files.
+echo.        Running this script as administrator is neither necessary nor recommended.
+echo.
+echo.        An AU2SB profile will be created in the offical Minecraft Launcher.
+echo.        If you do not yet have Minecraft installed, the launcher will be installed.
+echo.        Fabric will be installed automatically if it is not already installed.
+echo.
+echo.        The install size will be at least %AU2SB_size% GB, if you don't have enough space you should
+echo.        probably feel bad about your computer organization.
+echo.
+echo.
+echo.
+:path_prompt
+echo.        Please input a folder path if you would like to use a custom folder location, or simply
+echo.        press [Enter] if you would like to use the default .minecraft_au2sb folder (recommended).
+echo.
+title %title_prompt%
+set "minecraft_au2sb_folder="
 set /p "minecraft_au2sb_folder=Path: "
 title %title_normal%
-:skip_path_prompt
+
+:skip_prompt
+
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
+if "%minecraft_au2sb_folder%"=="" if not "%startup_selection%"=="4" set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path" >nul
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 if "%minecraft_au2sb_folder%"=="%appdata%\.minecraft" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
-echo.
-echo AU2SB install path is %minecraft_au2sb_folder%
+if not "%startup_selection%"=="4" (
+    echo.
+    echo AU2SB install path is %minecraft_au2sb_folder%
+)
 echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
 echo.
 
 REM Check if MinecraftLauncher.exe is running
-:kill_launcher_again
+:kill_launcher
 tasklist /FI "IMAGENAME eq MinecraftLauncher.exe" 2>NUL | find /I /N "MinecraftLauncher.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo Minecraft Launcher is currently running. Please close it before proceeding.
@@ -115,12 +198,32 @@ if "%ERRORLEVEL%"=="0" (
         echo All MinecraftLauncher.exe processes have been stopped. Continuing...
         echo.
     ) || (
-        goto kill_launcher_again
+        goto kill_launcher
 title %title_stopped%
         echo Please close Minecraft Launcher and run the updater again.
         pause
         exit /b
     )
+)
+
+REM uses powershell to move the folder to the recycle bin and delete the profile from the launcher
+if "%startup_selection%"=="3" (
+    powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere(%minecraft_au2sb_folder%)"
+    rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
+    powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
+echo.
+echo        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
+echo        This script does not uninstall the Minecraft Launcher itself or any other software.
+title %title_finished%
+    pause
+    exit /b
+)
+
+REM uses robocopy to move the existing folder to the specified location
+if "%startup_selection%"=="4" (
+    echo Moving installation to %minecraft_au2sb_folder%
+    robocopy %old_minecraft_au2sb_folder% %minecraft_au2sb_folder% /e /move /xf "%old_minecraft_au2sb_folder%\path" /log:"%temp%\AU2SB_move.log"
+    goto update_start
 )
 
 REM Check if %appdata%\.minecraft exists
@@ -140,13 +243,6 @@ title %title_installing%
         exit /b
     )
 )
-
-REM Make folder
-if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
-if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
-
-REM Define the path to the launcher_profiles.json file
-set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
 
 :recheck_launcher_profiles
 REM Make sure it exists
@@ -272,9 +368,10 @@ title %title_stopped%
 title %title_installing%
 
 REM Set RAM allocation amount
+set "RAM_unset=false"
 if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
-    echo|set /p="8" > "%minecraft_au2sb_folder%\ram_alloc.txt"
-    set "RAM_allocation=8"
+    echo|set /p="6" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    set "RAM_allocation=6"
     set "RAM_unset=true"
 )
 
@@ -304,6 +401,11 @@ title %title_installing%
 )
 set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
 
+REM skip prompt if startup_selection 1
+if "%startup_selection%"=="1" if "%RAM_unset%"=="false" (
+    goto update_start
+)
+
 REM Warn the user if RAM capacity is less than certain values on subsequent runs
 if %user_RAM_GB% lss 8 (
 title %title_warning%
@@ -330,7 +432,7 @@ if "%RAM_unset%"=="true" if %user_RAM_GB% lss 8 (
     goto ram_next
 )
 if "%RAM_unset%"=="true" (
-    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press [Enter] to use the default 8 GB (remembers your choice): "
+    set /p "RAM_allocation=Please enter the amount of RAM to allocate (4 - %user_RAM_max%), or press [Enter] to use the default 6 GB (remembers your choice): "
 ) else (
     if %user_RAM_GB% lss 8 (
         set /p "RAM_allocation=Press [Enter] to use %RAM_allocation% GB (remembers your choice), or enter a new amount of RAM to allocate (<%user_RAM_max%): "
@@ -364,7 +466,7 @@ title %title_installing%
     goto input_loop
 )
 
-
+:update_start
 title %title_installing%
 
 set "AU2SB_created_date=1999-03-20T00:00:00.002Z"
@@ -378,12 +480,30 @@ powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-C
 REM new AU2SB profile entry
 powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB%profile_suffix%'; 'type' = 'custom' }; $jsonContent = Get-Content -Path '%launcher_profiles%' | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name 'AU2SB' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path '%launcher_profiles%'"
 
+if "%startup_selection%"=="4" (
+echo        AU2SB successfully moved!exclaim!
+title %title_prompt%
+    set /p "back_to_start=Return to option selection? ([y]es / no [Enter]): "
+title %title_normal%
+    echo.
+    REM If the user input is 'y' or 'yes', go back to start
+    echo !back_to_start! | findstr /I /C:"y" >nul && (
+        goto :retry_selection
+    ) || (
+        title %title_finished%
+        pause
+        exit /b
+    )
+)
 
 REM Fetch the URL for the downloads
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/mods.txt') do (set "mods_url=%%i")
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/config.txt') do (set "config_url=%%i")
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/resourcepacks.txt') do (set "resourcepacks_url=%%i")
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/extras.txt') do (set "extras_url=%%i")
+
+REM make folder
+if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
 
 REM Check if AU2SBmodsversion exists
 set "is_update=false"
@@ -409,17 +529,14 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
                 goto mods_folder_empty_or_missing
             ) else (
                 set "is_update=true"
-                goto continue
             )
         )
     )
 ) else (
     REM If the file does not exist, create it and set the contents to mods_url
     (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
-    goto continue
 )
 
-:continue
 REM Compare the contents of the file with mods_url
 if "!current_mods_url!"=="!mods_url!" (
     REM If they are the same, set mods_uptodate to true
@@ -431,6 +548,7 @@ if "!current_mods_url!"=="!mods_url!" (
     (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
 )
 
+if "%startup_selection%"=="1" goto mods_folder_empty_or_missing
 REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
@@ -724,6 +842,7 @@ title %title_installing%
         REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
     ) || (
+        set "zerotier_note=true"
         echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
         goto skip_zerotier
@@ -743,13 +862,24 @@ echo.
 echo.
 echo.
 echo.
+echo.
+echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
+echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
+echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
+echo.     jK           BM    BK    zg      jB    jB           jB           BP          jB     BP    #K    jk
+echo.     #'    BBBBBBBB     BM    BK,     BK    jBBBBBBBP    jB    jB'    BK    jBBBBBBBW    #K    jBPPPPPB
+echo.    jP    jBBBBBBBK    jB     BBB     BK    jB           jB    jB-    #b           BK           Bk    jC
+echo.    #WgggggBBBPTTtWgggggBgggggBBBgggggBkgggggBggggggggggggBgggggBkgggggBggggggggggggBggggggggggBBBgggggB
+echo.     TBBBBBBBB    jBBBBBBBBBBBBBhBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBP
+echo.      '#BBBBBK     jBBBBBBBBBBBB #BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCjBBBBBB-
+echo.
 echo            Tips:
 echo        The game will take a few moments to launch, it will ding when finished.  Neat!exclaim!
 echo        If the game appears to be "not responding" on the loading screen please wait for a
 echo        moment, it is likely still loading.
 echo.
 echo        You can check for the latest version by running this updater before you start your game
-echo        and compare to your version listed in the Minecraft Launcher, it is listed at the start
+echo        and compare to your version shown in the Minecraft Launcher, it is shown at the start
 echo        of the updater.
 echo.
 echo.
@@ -766,12 +896,7 @@ echo        You will need to configure ZeroTier manually before playing AU2SB.
 echo.
 )
 echo.
-echo        Start your game with the AU2SB profile in the Minecraft Launcher.
-echo.
-echo.
-echo.
-echo.
-echo.
+echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the official Minecraft Launcher.
 echo.
 echo.
 pause
