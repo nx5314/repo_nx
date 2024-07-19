@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5"
+set "this_updater_version=1.5.0.1"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -106,8 +106,9 @@ echo        1. Update
 echo        2. Modify and update
 echo        3. Uninstall
 echo        4. Move install location
+echo.
     title %title_prompt%
-    set /p "startup_selection=Option: "
+    set /p "startup_selection=Select: "
     if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" (
         echo Invalid selection, please enter a number between 1 and 4.
         echo.
@@ -123,7 +124,6 @@ if "%startup_selection%"=="1" (
 REM if "%startup_selection%"=="2" ()
 
 if "%startup_selection%"=="3" (
-echo.
 title %title_prompt%
 set /p "uninstall_confirm=Please confirm to uninstall ([y]es / no [Enter]): "
 title %title_normal%
