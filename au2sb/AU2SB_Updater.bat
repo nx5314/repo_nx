@@ -114,10 +114,10 @@ if "%existing_install%"=="true" (
     :retry_selection
 set "startup_selection=0"
 echo    Option Selection
-echo        1. Update
-echo        2. Modify and update
-echo        3. Uninstall
-echo        4. Move install location
+echo         1. Update
+echo         2. Modify and update
+echo         3. Uninstall
+echo         4. Move install location
 echo.
     title %title_prompt%
     set /p "startup_selection=Select: "
