@@ -79,8 +79,8 @@ echo                      jHHHHHMMHHHHHH  HHHHHt jHHHHHH $EEEEEMMMMMMMM  MMMMMMM
 echo                      K]]]]H  ]]]]]K j]]]]]H ]]]]]]  $EEEEE                 jHHHHHH jHHHHHW #HHHHH
 echo                      ]]]]]H ]]]]]]H ]]]]]]HHH]]]]]  $EEEEE@@@@@@@@  KKKKKKKKNNNNNK jNNNNNKKKNNNNNH
 echo                     ]HHHHH` (HHHHH  [HHHHHHHHHHHHH  RRRRRRRRRRRRRR  HHHHHHHHHHHHHH  HHHHHHHHHHHHHK
-echo                                                     ][[[[[[[[[[[[[  ]]]]]]]]]]]]]  ]]]]]]]]]]]]]H
-echo                                                     ][[[[[[[[[[[[[ ]]]]]]]]]]]]][  ]]]]]]]]]]]]H
+echo                      `````  ``````   `````````````  ][[[[[[[[[[[[[  ]]]]]]]]]]]]]  ]]]]]]]]]]]]]H
+echo                       ````   ``````   ````````````  ][[[[[[[[[[[[[ ]]]]]]]]]]]]][  ]]]]]]]]]]]]H
 echo.
 echo                                        The latest version of AU2SB is %latest_AU2SB_version%
 echo.
