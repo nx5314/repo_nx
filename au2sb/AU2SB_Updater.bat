@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.1"
+set "this_updater_version=1.5.0.2"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -97,6 +97,18 @@ title %title_stopped%
     exit /b
 )
 
+:: .d88888b.           888    d8b                            
+::d88P" "Y88b          888    Y8P                            
+::888     888          888                                   
+::888     888 88888b.  888888 888  .d88b.  88888b.  .d8888b  
+::888     888 888 "88b 888    888 d88""88b 888 "88b 88K      
+::888     888 888  888 888    888 888  888 888  888 "Y8888b. 
+::Y88b. .d88P 888 d88P Y88b.  888 Y88..88P 888  888      X88 
+:: "Y88888P"  88888P"   "Y888 888  "Y88P"  888  888  88888P' 
+::            888                                            
+::            888                                            
+::            888
+
 REM show options if existing install
 if "%existing_install%"=="true" (
     :retry_selection
@@ -144,6 +156,17 @@ echo.
 goto path_prompt
 )
 
+::8888888b.          888    888           8888888b.                                         888    
+::888   Y88b         888    888           888   Y88b                                        888    
+::888    888         888    888           888    888                                        888    
+::888   d88P 8888b.  888888 88888b.       888   d88P 888d888 .d88b.  88888b.d88b.  88888b.  888888 
+::8888888P"     "88b 888    888 "88b      8888888P"  888P"  d88""88b 888 "888 "88b 888 "88b 888    
+::888       .d888888 888    888  888      888        888    888  888 888  888  888 888  888 888    
+::888       888  888 Y88b.  888  888      888        888    Y88..88P 888  888  888 888 d88P Y88b.  
+::888       "Y888888  "Y888 888  888      888        888     "Y88P"  888  888  888 88888P"   "Y888 
+::                                                                                 888             
+::                                                                                 888             
+::                                                                                 888             
 
 REM Prompt for path
 if "%existing_install%"=="true" (
@@ -205,6 +228,15 @@ title %title_stopped%
         exit /b
     )
 )
+
+::888     888          d8b                   888             888 888 
+::888     888          Y8P                   888             888 888 
+::888     888                                888             888 888 
+::888     888 88888b.  888 88888b.  .d8888b  888888  8888b.  888 888 
+::888     888 888 "88b 888 888 "88b 88K      888        "88b 888 888 
+::888     888 888  888 888 888  888 "Y8888b. 888    .d888888 888 888 
+::Y88b. .d88P 888  888 888 888  888      X88 Y88b.  888  888 888 888 
+:: "Y88888P"  888  888 888 888  888  88888P'  "Y888 "Y888888 888 888 
 
 REM uses powershell to move the folder to the recycle bin and delete the profile from the launcher
 if "%startup_selection%"=="3" (
@@ -306,6 +338,15 @@ title %title_stopped%
     echo Checking profiles...
 )
 
+::8888888888       888              d8b          
+::888              888              Y8P          
+::888              888                           
+::8888888  8888b.  88888b.  888d888 888  .d8888b 
+::888         "88b 888 "88b 888P"   888 d88P"    
+::888     .d888888 888  888 888     888 888      
+::888     888  888 888 d88P 888     888 Y88b.    
+::888     "Y888888 88888P"  888     888  "Y8888P 
+
 REM Check fabric installation
 set "fabric_exists=false"
 if exist "%appdata%\.minecraft\versions\fabric-loader-0.15.11-1.20.1" (
@@ -334,6 +375,19 @@ REM Check if fabric was able to install
         echo Fabric installed
         goto fabric_is_installed
 )
+
+::  888888                            
+::    "88b                            
+::     888                            
+::     888  8888b.  888  888  8888b.  
+::     888     "88b 888  888     "88b 
+::     888 .d888888 Y88  88P .d888888 
+::     88P 888  888  Y8bd8P  888  888 
+::     888 "Y888888   Y88P   "Y888888 
+::   .d88P                            
+:: .d88P"                             
+::888P"
+
 REM If java needs to be installed
 set proceed_with_java_install=null
 if "%need_java%"=="true" (
@@ -366,6 +420,15 @@ title %title_stopped%
 
 :fabric_is_installed
 title %title_installing%
+
+::8888888b.         d8888 888b     d888 
+::888   Y88b       d88888 8888b   d8888 
+::888    888      d88P888 88888b.d88888 
+::888   d88P     d88P 888 888Y88888P888 
+::8888888P"     d88P  888 888 Y888P 888 
+::888 T88b     d88P   888 888  Y8P  888 
+::888  T88b   d8888888888 888   "   888 
+::888   T88b d88P     888 888       888 
 
 REM Set RAM allocation amount
 set "RAM_unset=false"
@@ -469,6 +532,15 @@ title %title_installing%
 :update_start
 title %title_installing%
 
+::8888888b.                   .d888 d8b 888          
+::888   Y88b                 d88P"  Y8P 888          
+::888    888                 888        888          
+::888   d88P 888d888 .d88b.  888888 888 888  .d88b.  
+::8888888P"  888P"  d88""88b 888    888 888 d8P  Y8b 
+::888        888    888  888 888    888 888 88888888 
+::888        888    Y88..88P 888    888 888 Y8b.     
+::888        888     "Y88P"  888    888 888  "Y8888  
+
 set "AU2SB_created_date=1999-03-20T00:00:00.002Z"
 set "AU2SB_icon=data:image/png;base64,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"
 
@@ -505,6 +577,15 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 REM make folder
 if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
 
+::888b     d888               888          
+::8888b   d8888               888          
+::88888b.d88888               888          
+::888Y88888P888  .d88b.   .d88888 .d8888b  
+::888 Y888P 888 d88""88b d88" 888 88K      
+::888  Y8P  888 888  888 888  888 "Y8888b. 
+::888   "   888 Y88..88P Y88b 888      X88 
+::888       888  "Y88P"   "Y88888  88888P' 
+
 REM Check if AU2SBmodsversion exists
 set "is_update=false"
 set "mods_uptodate=false"
@@ -521,12 +602,12 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
             if not exist "%minecraft_au2sb_folder%\mods" (
                 set "mods_uptodate=false"
                 echo Mods folder missing
-                goto mods_folder_empty_or_missing
+                goto mods_skip_prompt
             )
             if not exist "%minecraft_au2sb_folder%\mods\*" (
                 set "mods_uptodate=false"
                 echo Mods folder empty
-                goto mods_folder_empty_or_missing
+                goto mods_skip_prompt
             ) else (
                 set "is_update=true"
             )
@@ -548,7 +629,7 @@ if "!current_mods_url!"=="!mods_url!" (
     (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
 )
 
-if "%startup_selection%"=="1" goto mods_folder_empty_or_missing
+if "%startup_selection%"=="1" goto mods_skip_prompt
 REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
@@ -561,7 +642,7 @@ title %title_installing%
     echo !override_mods! | findstr /I /C:"y" >nul && (set "mods_uptodate=false" && echo Mods status overruled) || (set "mods_uptodate=true" && echo Skipping mods && goto skip_mods)
 )
 
-:mods_folder_empty_or_missing
+:mods_skip_prompt
 REM Download, extract, and move mods if mods_uptodate is not true
 if "%mods_uptodate%"=="false" (
     echo Downloading mods...
@@ -582,6 +663,19 @@ if "%mods_uptodate%"=="false" (
     robocopy "%temp%\au2sb\mods" "%minecraft_au2sb_folder%\mods" /s /purge /r:100 /move /log:"%temp%\au2sb_mods.log" 2>&1 >nul
 )
 :skip_mods
+
+:: .d8888b.                     .d888 d8b          
+::d88P  Y88b                   d88P"  Y8P          
+::888    888                   888                 
+::888         .d88b.  88888b.  888888 888  .d88b.  
+::888        d88""88b 888 "88b 888    888 d88P"88b 
+::888    888 888  888 888  888 888    888 888  888 
+::Y88b  d88P Y88..88P 888  888 888    888 Y88b 888 
+:: "Y8888P"   "Y88P"  888  888 888    888  "Y88888 
+::                                             888 
+::                                        Y8b d88P 
+::                                         "Y88P"
+
 REM Download, extract, and move config
 echo Downloading config...
 curl -L "%config_url%" --output "%temp%\au2sb_config.zip"
@@ -600,23 +694,102 @@ tar -xf "%temp%\au2sb_config.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving config to %minecraft_au2sb_folder%...
 robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move /xo /log:"%temp%\au2sb_config.log" 2>&1 >nul
 
-REM Download, extract, and move resourcepacks
-echo Downloading resourcepacks...
-curl -L "%resourcepacks_url%" --output "%temp%\au2sb_resourcepacks.zip"
+::8888888b.                                                                                        888               
+::888   Y88b                                                                                       888               
+::888    888                                                                                       888               
+::888   d88P .d88b.  .d8888b   .d88b.  888  888 888d888 .d8888b .d88b.  88888b.   8888b.   .d8888b 888  888 .d8888b  
+::8888888P" d8P  Y8b 88K      d88""88b 888  888 888P"  d88P"   d8P  Y8b 888 "88b     "88b d88P"    888 .88P 88K      
+::888 T88b  88888888 "Y8888b. 888  888 888  888 888    888     88888888 888  888 .d888888 888      888888K  "Y8888b. 
+::888  T88b Y8b.          X88 Y88..88P Y88b 888 888    Y88b.   Y8b.     888 d88P 888  888 Y88b.    888 "88b      X88 
+::888   T88b "Y8888   88888P'  "Y88P"   "Y88888 888     "Y8888P "Y8888  88888P"  "Y888888  "Y8888P 888  888  88888P' 
+::                                                                      888                                          
+::                                                                      888                                          
+::                                                                      888                                          
 
-REM Check the size of the downloaded file
-for %%A in ("%temp%\au2sb_resourcepacks.zip") do set resourcepacks_size=%%~zA
-REM If the file size is less than 1MB (in bytes), indicate the mods download failed
-if !resourcepacks_size! LSS 1000000 (
-    echo The download failed, please report that the resourcepacks download needs to be fixed
-    set "fail_state=true"
-    goto cleanup
+REM Check if AU2SBresourcepacksversion exists
+set "resourcepacks_uptodate=false"
+if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
+    for /f %%A in ("%minecraft_au2sb_folder%\AU2SBresourcepacksversion") do (
+        if %%~zA equ 0 (
+            echo The resourcepacks version file appears empty? How did that even happen?
+            REM Handle the empty file case here
+            (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
+        ) else (
+            REM Read the contents of the file
+            for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\AU2SBresourcepacksversion"') do (set "current_resourcepacks_url=%%i")
+            set "current_resourcepacks_url=!current_resourcepacks_url:~0,-1!"
+            if not exist "%minecraft_au2sb_folder%\resourcepacks" (
+                set "resourcepacks_uptodate=false"
+                echo Resourcepacks folder missing
+                goto resourcepacks_skip_prompt
+            )
+            if not exist "%minecraft_au2sb_folder%\resourcepacks\*" (
+                set "resourcepacks_uptodate=false"
+                echo Resourcepacks folder empty
+                goto resourcepacks_skip_prompt
+            )
+        )
+    )
+) else (
+    REM If the file does not exist, create it and set the contents to resourcepacks_url
+    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
 )
 
-echo Extracting resourcepacks...
-tar -xf "%temp%\au2sb_resourcepacks.zip" -C "%temp%\au2sb" 2>&1 >nul
-echo Moving resourcepacks to %minecraft_au2sb_folder%...
-robocopy "%temp%\au2sb\resourcepacks" "%minecraft_au2sb_folder%\resourcepacks" /s /r:100 /move /log:"%temp%\au2sb_resourcepacks.log" 2>&1 >nul
+REM Compare the contents of the file with resourcepacks_url
+if "!current_resourcepacks_url!"=="!resourcepacks_url!" (
+    REM If they are the same, set resourcepacks_uptodate to true
+    set "resourcepacks_uptodate=true"
+    REM Resourcepacks up-to-date = !resourcepacks_uptodate!
+) else (
+    REM If they are not the same, update the file with the new resourcepacks_url
+    REM Resourcepacks up-to-date = !resourcepacks_uptodate!
+    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
+)
+
+if "%startup_selection%"=="1" goto resourcepacks_skip_prompt
+REM If resourcepacks are up to date offer for user override
+if "%resourcepacks_uptodate%"=="true" (
+    REM Prompt the user to override resourcepacks_uptodate
+    echo Your resourcepacks appear to be up-to-date.
+title %title_prompt%
+    set /p "override_resourcepacks=Do you want to override and redownload resourcepacks anyway? ([y]es / no [Enter] = config only): "
+title %title_installing%
+    echo.
+    REM If the user input is 'y' or 'yes', set resourcepacks_uptodate to false
+    echo !override_resourcepacks! | findstr /I /C:"y" >nul && (set "resourcepacks_uptodate=false" && echo Resourcepacks status overruled) || (set "resourcepacks_uptodate=true" && echo Skipping resourcepacks && goto skip_resourcepacks)
+)
+
+:resourcepacks_skip_prompt
+REM Download, extract, and move mods if resourcepacks_uptodate is not true
+if "%resourcepacks_uptodate%"=="false" (
+    REM Download, extract, and move resourcepacks
+    echo Downloading resourcepacks...
+    curl -L "%resourcepacks_url%" --output "%temp%\au2sb_resourcepacks.zip"
+
+    REM Check the size of the downloaded file
+    for %%A in ("%temp%\au2sb_resourcepacks.zip") do set resourcepacks_size=%%~zA
+    REM If the file size is less than 1MB (in bytes), indicate the mods download failed
+    if !resourcepacks_size! LSS 1000000 (
+        echo The download failed, please report that the resourcepacks download needs to be fixed
+        set "fail_state=true"
+        goto cleanup
+    )
+
+    echo Extracting resourcepacks...
+    tar -xf "%temp%\au2sb_resourcepacks.zip" -C "%temp%\au2sb" 2>&1 >nul
+    echo Moving resourcepacks to %minecraft_au2sb_folder%...
+    robocopy "%temp%\au2sb\resourcepacks" "%minecraft_au2sb_folder%\resourcepacks" /s /r:100 /move /log:"%temp%\au2sb_resourcepacks.log" 2>&1 >nul
+)
+:skip_resourcepacks
+
+::8888888888          888                             
+::888                 888                             
+::888                 888                             
+::8888888    888  888 888888 888d888 8888b.  .d8888b  
+::888        `Y8bd8P' 888    888P"      "88b 88K      
+::888          X88K   888    888    .d888888 "Y8888b. 
+::888        .d8""8b. Y88b.  888    888  888      X88 
+::8888888888 888  888  "Y888 888    "Y888888  88888P' 
 
 REM Download, extract, and move extras
 echo Downloading extras...
@@ -635,6 +808,18 @@ echo Extracting extras...
 tar -xf "%temp%\au2sb_extras.zip" -C "%temp%\au2sb" 2>&1 >nul
 echo Moving extras to %minecraft_au2sb_folder%...
 robocopy "%temp%\au2sb" "%minecraft_au2sb_folder%" /s /r:100 /move /xo /log:"%temp%\au2sb_extras.log" 2>&1 >nul
+
+::                  888    d8b                                888             888    
+::                  888    Y8P                                888             888    
+::                  888                                       888             888    
+:: .d88b.  88888b.  888888 888  .d88b.  88888b.  .d8888b      888888 888  888 888888 
+::d88""88b 888 "88b 888    888 d88""88b 888 "88b 88K          888    `Y8bd8P' 888    
+::888  888 888  888 888    888 888  888 888  888 "Y8888b.     888      X88K   888    
+::Y88..88P 888 d88P Y88b.  888 Y88..88P 888  888      X88 d8b Y88b.  .d8""8b. Y88b.  
+:: "Y88P"  88888P"   "Y888 888  "Y88P"  888  888  88888P' Y8P  "Y888 888  888  "Y888 
+::         888                                                                       
+::         888                                                                       
+::         888
 
 REM copy options.txt
 if not exist "%base_minecraft_folder%\options.txt" (
@@ -788,7 +973,7 @@ if exist "%optionsfiletemp%" del "%optionsfiletemp%"
 for /f "delims=" %%i in (%optionsfile%) do (
     set "line=%%i"
     if "!line:~0,13!"=="resourcePacks" (
-        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","fabric","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","file/AU2SB WATUT.zip","seamless:default_seamless","meadow:optifine_support","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","file/GUI-SimpleStylized_4.7-1.20+.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
+        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","fabric","continuity:default","continuity:glass_pane_culling_fix","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","file/AU2SB WATUT.zip","seamless:default_seamless","seasons:seasonal_lush_caves","meadow:optifine_support","meadow:better_leaves","vinery:bushy_leaves","bloomingnature:bushy_leaves","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/Sparkles_1.21_v1.0.7.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","telepistons:enable_steam","telepistons:bellows_pistons","file/GUI-SimpleStylized_4.7-1.20+.zip","file/Brewing Guide 1.20.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,24!"=="incompatibleResourcePacks" (
         echo incompatibleResourcePacks:["file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,16!"=="glDebugVerbosity" (
@@ -806,6 +991,18 @@ if not exist "%minecraft_au2sb_folder%\keybinds_set" (
     echo. 2> "%minecraft_au2sb_folder%\keybinds_set"
 )
 
+:: .d8888b.  888                                              
+::d88P  Y88b 888                                              
+::888    888 888                                              
+::888        888  .d88b.   8888b.  88888b.  888  888 88888b.  
+::888        888 d8P  Y8b     "88b 888 "88b 888  888 888 "88b 
+::888    888 888 88888888 .d888888 888  888 888  888 888  888 
+::Y88b  d88P 888 Y8b.     888  888 888  888 Y88b 888 888 d88P 
+:: "Y8888P"  888  "Y8888  "Y888888 888  888  "Y88888 88888P"  
+::                                                   888      
+::                                                   888      
+::                                                   888
+
 :cleanup
 title %title_cleaning%
 REM Delete the zips
@@ -814,7 +1011,9 @@ if "%mods_uptodate%"=="false" (
     del "%temp%\au2sb_mods.zip" /q 2>&1 >nul
 )
 del "%temp%\au2sb_config.zip" /q 2>&1 >nul
-del "%temp%\au2sb_resourcepacks.zip" /q 2>&1 >nul
+if "%resourcepacks_uptodate%"=="false" (
+    del "%temp%\au2sb_resourcepacks.zip" /q 2>&1 >nul
+)
 del "%temp%\au2sb_extras.zip" /q 2>&1 >nul
 rmdir "%temp%\au2sb" /s /q
 
@@ -827,6 +1026,15 @@ title %title_failed%
     pause
     exit /b
 )
+
+::8888888888P                         888    d8b                  
+::      d88P                          888    Y8P                  
+::     d88P                           888                         
+::    d88P    .d88b.  888d888 .d88b.  888888 888  .d88b.  888d888 
+::   d88P    d8P  Y8b 888P"  d88""88b 888    888 d8P  Y8b 888P"   
+::  d88P     88888888 888    888  888 888    888 88888888 888     
+:: d88P      Y8b.     888    Y88..88P Y88b.  888 Y8b.     888     
+::d8888888888 "Y8888  888     "Y88P"   "Y888 888  "Y8888  888     
 
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
