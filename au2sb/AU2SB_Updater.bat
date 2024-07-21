@@ -1110,13 +1110,13 @@ echo.
 echo.
 REM Check the variables and display the appropriate messages
 if "%is_update%"=="true" (
-echo        AU2SB updated!exclaim!
+echo                                            AU2SB updated!exclaim!
 ) else (
-echo        AU2SB installed!exclaim!
+echo                                           AU2SB installed!exclaim!
 )
 echo.
 if "%zerotier_note%"=="true" (
-echo        You will need to configure ZeroTier manually before playing AU2SB.
+echo        You will need to configure ZeroTier and be authorized before playing AU2SB.
 echo.
 )
 echo.
