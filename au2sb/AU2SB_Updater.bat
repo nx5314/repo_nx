@@ -1,6 +1,6 @@
 :: This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation of Fabric, a popular mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
 :: Run the script in a Windows command prompt environment.  It will guide you through the installation or update process with prompts.
-:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6 GB of free RAM is recommended to play AU2SB.  Installing on an SSD is recommended.
+:: Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.
 
 @echo off
 setlocal enabledelayedexpansion
@@ -164,7 +164,7 @@ echo.    About:
 echo.
 echo.  This script automates the installation and updating process for AU2SB, a custom Minecraft mod pack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation of Fabric, a popular mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
 echo.  Run the script in a Windows command prompt environment.  It will guide you through the installation or update process with prompts.
-echo.  Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 6 GB of free RAM is recommended to play AU2SB.  Installing on an SSD is recommended.
+echo.  Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB.
 echo.
 echo Press any key to return to the Options...
 pause >nul
@@ -240,7 +240,8 @@ if "%ERRORLEVEL%"=="0" (
         goto kill_launcher
 title %title_stopped%
         echo Please close Minecraft Launcher and run the updater again.
-        pause
+        echo Press any key to exit.
+        pause >nul
         exit /b
     )
 )
@@ -263,7 +264,8 @@ echo.
 echo        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
 echo        This script does not uninstall the Minecraft Launcher itself or any other software.
 title %title_finished%
-    pause
+echo Press any key to exit.
+pause >nul
     exit /b
 )
 
@@ -287,7 +289,8 @@ title %title_installing%
         winget.exe install --id Mojang.MinecraftLauncher --exact --accept-source-agreements --silent --disable-interactivity --accept-package-agreements
     ) || (
         echo Please download and install the Minecraft Launcher and run the AU2SB installer again.
-        pause
+echo Press any key to exit.
+pause >nul
         exit /b
     )
 )
@@ -347,7 +350,8 @@ title %title_installing%
         )
         echo Please ensure %appdata%\.minecraft\launcher_profiles.json exists before attempting installation again
 title %title_stopped%
-        pause
+echo Press any key to exit.
+pause >nul
         exit /b
     )
 ) else (
@@ -423,14 +427,16 @@ title %title_installing%
     winget.exe install --id EclipseAdoptium.Temurin.21.JRE --exact
     echo Java should now be installed, please exit this terminal window and run this installer again to finish installing AU2SB
 title %title_stopped%
-    pause
+    echo Press any key to exit.
+    pause >nul
     exit /b
 )
 
 if "%proceed_with_java_install%"=="false" (
 title %title_stopped%
     echo Java will not be installed, please install it yourself and run this installer again to finish installing AU2SB
-    pause
+    echo Press any key to exit.
+    pause >nul
     exit /b
 )
 
@@ -579,7 +585,8 @@ title %title_normal%
         goto :retry_selection
     ) || (
         title %title_finished%
-        pause
+        echo Press any key to exit.
+        pause >nul
         exit /b
     )
 )
@@ -1039,7 +1046,8 @@ if "%fail_state%"=="true" (
     echo.
 title %title_failed%
     echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
-    pause
+    echo Press any key to exit.
+    pause >nul
     exit /b
 )
 
@@ -1122,6 +1130,6 @@ echo.
 echo.
 echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the official Minecraft Launcher.
 echo.
-echo.
-pause
+echo Press any key to exit.
+pause >nul
 exit /b
