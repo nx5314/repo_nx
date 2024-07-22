@@ -1044,6 +1044,11 @@ REM Exit if in failed state
 if "%fail_state%"=="true" (
     echo.
     echo.
+    echo.
+    echo.
+    echo.
+    echo.
+    echo.
 title %title_failed%
     echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
     echo Press any key to exit.
