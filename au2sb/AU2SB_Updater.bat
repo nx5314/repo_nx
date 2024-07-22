@@ -225,6 +225,18 @@ if not "%startup_selection%"=="4" (
 echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
 echo.
 
+REM Make minecraft_au2sb_folder
+if not exist "%minecraft_au2sb_folder%" mkdir "%minecraft_au2sb_folder%"
+
+REM Check if the user has access to the folder
+if not exist "%minecraft_au2sb_folder%" (
+    echo The folder %minecraft_au2sb_folder% does not exist or you do not have access to it.
+    set "fail_state=true"
+    goto fail_end
+) else (
+    echo The folder %minecraft_au2sb_folder% exists and you have access to it.
+)
+
 REM Check if MinecraftLauncher.exe is running
 :kill_launcher
 tasklist /FI "IMAGENAME eq MinecraftLauncher.exe" 2>NUL | find /I /N "MinecraftLauncher.exe">NUL
@@ -240,7 +252,7 @@ if "%ERRORLEVEL%"=="0" (
     ) || (
         goto kill_launcher
 title %title_stopped%
-        echo Please close Minecraft Launcher and run the updater again.
+        echo Please close the Minecraft Launcher and run the updater again.
         echo Press any key to exit.
         pause >nul
         exit /b
@@ -262,9 +274,22 @@ if "%startup_selection%"=="3" (
     rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
     powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 echo.
-echo        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
-echo        This script does not uninstall the Minecraft Launcher itself or any other software.
+echo.
+echo.
+echo.               .d88 
+echo.        d8b   d88P" 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               "Y88 
+echo.
+echo.
+echo.        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
+echo.        This script does not uninstall the Minecraft Launcher itself or any other software.
 title %title_finished%
+echo.
 echo Press any key to exit.
 pause >nul
     exit /b
@@ -1041,18 +1066,32 @@ if "%resourcepacks_uptodate%"=="false" (
 del "%temp%\au2sb_extras.zip" /q 2>&1 >nul
 rmdir "%temp%\au2sb" /s /q
 
+:fail_end
 REM Exit if in failed state
 if "%fail_state%"=="true" (
     echo.
     echo.
     echo.
     echo.
+echo.       ,===============u.===============; c====== =======,         ,===============,,==============,  ;=====,
+echo.       P              .@@               @QP      @@      @         @               ]@@             ``)@@    ]
+echo.      $               $@P   @@@  $@@    @@      ]@@      @         $P               @@                $@     $
+echo.     ]      ]@@@@@@@@@@@    [,$@@$[[   ]@@      ]@P      @         $@      @@@@@@@@@O@C      @@@p      @@     C
+echo.    ,P      [````````$sP    ]@P`]@     $Q@      $@P      @         ]@      `````````]@@      $ #@      ]@@    ],
+echo.    @                @@     $@  @@     @Q@      @@C      @         ]@                @@      ], @D      @@     ]
+echo.   $                $@@                @@C      @@       @         ;@                $@P      $ ]@      ]@@     $
+echo.  ;`      @@@@@@@@@@&$                ]@@       @@       @         :@       @@@@@@@@@&#@      ]  @@      $@P     C
+echo.  @      &@         ,@      $@@@      $Q@       @@       [````````]u@       [`````````#@       [`[[       @@@@@@@#
+echo. @      .@`         $       @C$       @Q@      ]@@                 @@C                ]@@                 ]@@     &
+echo.]`      @@         .@      ,@,@       @&P      ]@@                 @@@                 @@                @@#@p     b
+echo.@@@@@@@@@          ]@@@@@@@@P:@@@@@@@@&#@@@@@@@@O@@@@@@@@@@@@@@@@@@@O@@@@@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@@@  ]@@@@@@@
+echo.````````            ````````  ````````  ```````` ``````````````````  ``````````````````  `````````````````    ``````
     echo.
     echo.
     echo.
 title %title_failed%
-    echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
-    echo Press any key to exit.
+echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
+echo Press any key to exit.
     pause >nul
     exit /b
 )
