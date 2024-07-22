@@ -277,13 +277,13 @@ echo.
 echo.
 echo.
 echo.               .d88 
-echo.        d8b   d88P" 
+echo.        d8b   d88P' 
 echo.        Y8P  d88P   
 echo.             888    
 echo.             888    
 echo.        d8b  Y88b   
 echo.        Y8P   Y88b. 
-echo.               "Y88 
+echo.               'Y88 
 echo.
 echo.
 echo.        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
@@ -1022,7 +1022,7 @@ if exist "%optionsfiletemp%" del "%optionsfiletemp%"
 for /f "delims=" %%i in (%optionsfile%) do (
     set "line=%%i"
     if "!line:~0,13!"=="resourcePacks" (
-        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","fabric","continuity:default","continuity:glass_pane_culling_fix","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","file/AU2SB WATUT.zip","seamless:default_seamless","seasons:seasonal_lush_caves","file/Os\u0027 Colorful Cobblestone.zip","file/Os\u0027 2D Iron Bars.zip","meadow:optifine_support","vinery:bushy_leaves","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/Authentic Shadows_1.20.zip","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/Better Horses 1.20.zip","file/Sparkles_1.21_v1.0.7.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","telepistons:enable_steam","telepistons:bellows_pistons","file/GUI-SimpleStylized_4.7-1.20+.zip","file/Brewing Guide 1.20.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
+        echo resourcePacks:["vanilla","Fabrication grayscale","Fabrication","Moonlight Mods Dynamic Assets","convenientdecor:hydrated_farmland","moreberries:modifiedsweetberrybushmodel","fabric","continuity:default","continuity:glass_pane_culling_fix","file/Nautilus3D_V1.9_[MC-1.13+].zip","file/AU2SB Panorama.zip","file/AU2SB WATUT.zip","file/AU2SB CIT.zip","seamless:default_seamless","seasons:seasonal_lush_caves","file/Os\u0027 Colorful Cobblestone.zip","file/Os\u0027 2D Iron Bars.zip","meadow:optifine_support","vinery:bushy_leaves","presencefootsteps:default_sound_pack","rprenames:default_dark_mode","file/Authentic Shadows_1.20.zip","file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip","file/Better Horses 1.20.zip","file/Sparkles_1.21_v1.0.7.zip","file/better_flame_particles-v2.0-mc1.14x-1.20x-resourcepack.zip","telepistons:enable_steam","telepistons:bellows_pistons","file/GUI-SimpleStylized_4.7-1.20+.zip","file/Brewing Guide 1.20.zip","file/[1.4.1] Enhanced Boss Bars.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,24!"=="incompatibleResourcePacks" (
         echo incompatibleResourcePacks:["file/§9RAY\u0027s§r 3D Rails.zip","file/§bRAY\u0027s§r 3D Ladders.zip","file/xali\u0027s Potions v1.0.0.zip"]>>"%optionsfiletemp%"
     ) else if "!line:~0,16!"=="glDebugVerbosity" (
