@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.3"
+set "this_updater_version=1.5.0.4"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -135,8 +135,6 @@ if "%startup_selection%"=="1" (
     goto skip_prompt
 )
 
-REM if "%startup_selection%"=="2" ()
-
 if "%startup_selection%"=="3" (
 title %title_prompt%
 set /p "uninstall_confirm=Please confirm to uninstall ([y]es / no [Enter]): "
@@ -160,11 +158,7 @@ goto path_prompt
 
 if "%startup_selection%"=="5" (
 echo.
-echo.    About:
-echo.
-echo.  This script automates the installation and updating process for AU2SB, a custom Minecraft modpack.  It checks for the latest version of the updater script, AU2SB, and its components (mods, config files, resource packs, and extra files).  If updates are available, it downloads and installs them.  It also sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation of Fabric, a popular mod loader.  The script ensures all components are up to date and configures the game environment for AU2SB.  If Minecraft is detected not to be installed, the Minecraft Launcher can be installed automatically.
-echo.  It will guide you through the installation or update process with prompts.
-echo.  Requirements: Internet connection, winget (included in Win10/11 by default) for prerequisite installers, and permissions to access the .minecraft directory.  At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB.
+echo    About: temp
 echo.
 echo Press any key to return to the Options...
 pause >nul
