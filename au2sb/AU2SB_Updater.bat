@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.5"
+set "this_updater_version=1.5.0.6"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -158,7 +158,24 @@ goto path_prompt
 
 if "%startup_selection%"=="5" (
 echo.
-echo    About: temp
+echo    About:
+echo.
+echo    This script automates the installation and updating process for AU2SB, a custom Minecraft modpack.
+echo It checks for the latest version of the updater script, AU2SB, and its components ^(mods, config files,
+echo resource packs, and extra files^).  ^If updates are available, it downloads and installs them.  It also
+echo sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation
+echo of Fabric, a popular mod loader.  The script ensures all components are up to ^date and configures the
+echo game environment ^for AU2SB.  ^If Minecraft is detected not to be installed, the Minecraft Launcher can
+echo be installed automatically.
+echo.
+echo    Run the script in a Windows command prompt environment.  It will guide you through the installation
+echo or update process with prompts.
+echo.
+echo    Requirements: Internet connection, winget ^(included in Win10/11 by default^) ^for prerequisite
+echo installers, and permissions to access the .minecraft directory.  ^At least 8 GB of system RAM is required
+echo to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB,
+echo if you don't have enough space you should feel bad about your computer organization.
+echo.
 echo.
 echo Press any key to return to the Options...
 pause >nul
@@ -192,7 +209,7 @@ echo.        Fabric will be installed automatically if it is not already install
 echo.
 echo.        At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.
 echo.        The install size will be at least %AU2SB_size% GB, if you don't have enough space you should
-echo.        probably feel bad about your computer organization.
+echo.        feel bad about your computer organization.
 echo.
 echo.
 echo.
@@ -216,11 +233,11 @@ if not "%startup_selection%"=="4" (
     echo.
     echo AU2SB install path is %minecraft_au2sb_folder%
 )
-echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
-echo.
 
 REM Make minecraft_au2sb_folder
 if not exist "%minecraft_au2sb_folder%" mkdir "%minecraft_au2sb_folder%"
+echo.|set /p="%minecraft_au2sb_folder%" > "%appdata%\.minecraft_au2sb\path"
+echo.
 
 REM Check if the user has access to the folder
 if not exist "%minecraft_au2sb_folder%" (
@@ -264,7 +281,8 @@ title %title_stopped%
 
 REM uses powershell to move the folder to the recycle bin and delete the profile from the launcher
 if "%startup_selection%"=="3" (
-    powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere(%minecraft_au2sb_folder%)"
+    set "minecraft_au2sb_folder_uninstall="%minecraft_au2sb_folder%""
+    powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere(!minecraft_au2sb_folder_uninstall!)"
     rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
     powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 echo.
@@ -1067,11 +1085,19 @@ if "%fail_state%"=="true" (
     echo.
     echo.
     echo.
+echo.               .d88 
+echo.        d8b   d88P' 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               'Y88 
     echo.
     echo.
     echo.
 title %title_failed%
-echo Something went wrong along the way, please report the issue and screenshot the terminal output for reference.
+echo Something went wrong along the way, please report the issue and save the terminal output for reference.
 echo Press any key to exit.
     pause >nul
     exit /b
@@ -1141,7 +1167,6 @@ echo        and compare to your version shown in the Minecraft Launcher, it is s
 echo        of the updater.
 echo.
 echo.
-echo.
 REM Check the variables and display the appropriate messages
 if "%is_update%"=="true" (
 echo                                            AU2SB updated!exclaim!
@@ -1158,4 +1183,4 @@ echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the
 echo.
 echo Press any key to exit.
 pause >nul
-exit /b
+exit
