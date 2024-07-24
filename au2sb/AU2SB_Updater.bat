@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.7"
+set "this_updater_version=1.5.0.8"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -28,6 +28,23 @@ set "startup_selection=0"
 title %title_normal%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
+REM check if curl works -_-
+if "%latest_updater_version%"=="" (
+echo.
+echo.               .d88 
+echo.        d8b   d88P' 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               'Y88 
+echo.
+echo        It looks like your Windows installation is somehow messed up, the curl.exe is not functioning or is missing.
+echo        Why have you done this.
+pause
+exit /b
+)
 set "updater_download_path=%cd%"
 REM Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
@@ -46,6 +63,12 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	exit /b
 )
 REM Check AU2SB version
+if exist "%appdata%\.minecraft_au2sb\path" (
+set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
+)
+if exist "%current_minecraft_au2sb_folder%\version" (
+set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\version"
+)
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
 REM Check AU2SB size
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
@@ -81,8 +104,14 @@ echo                      ]]]]]H ]]]]]]H ]]]]]]HHH]]]]]  $EEEEE@@@@@@@@  KKKKKKK
 echo                     ]HHHHH` (HHHHH  [HHHHHHHHHHHHH  RRRRRRRRRRRRRR  HHHHHHHHHHHHHH  HHHHHHHHHHHHHK
 echo                      `````  ``````   `````````````  ][[[[[[[[[[[[[  ]]]]]]]]]]]]]  ]]]]]]]]]]]]]H
 echo                       ````   ``````   ````````````  ][[[[[[[[[[[[[ ]]]]]]]]]]]]][  ]]]]]]]]]]]]H
-echo.
+if not "%current_AU2SB_version%"=="" if not "%current_AU2SB_version%"=="%latest_AU2SB_version%" (
+echo                                      Your current version of AU2SB is %current_AU2SB_version%
+) else ( echo. )
+if not "%current_AU2SB_version%"=="%latest_AU2SB_version%" (
 echo                                        The latest version of AU2SB is %latest_AU2SB_version%
+) else (
+echo                                         Your AU2SB installation is up-to-date.
+)
 echo.
 
 REM Cancel the install if the system has less than 7 GB of RAM.  I'm doing this early so nothing gets installed if this is the case.  Using 7 just in case the values are odd, but still much less than 8.
@@ -199,27 +228,22 @@ REM Prompt for path
 if "%existing_install%"=="true" (
     goto skip_prompt
 )
+echo.           PLEASE READ THE FOLLOWING:
 echo.
-echo.                                      PLEASE READ THE FOLLOWING
+echo.           This installer/updater script will guide you through the installation process with prompts.
+echo.        Running this script as administrator should be neither necessary nor is it recommended.
 echo.
-echo.        This installer/updater script will automatically download the required mods and config files.
-echo.        Running this script as administrator is neither necessary nor recommended.
+echo.           An AU2SB profile will be created in the offical Minecraft Launcher.  If you do not yet have
+echo.        Minecraft installed, the launcher will be installed.  A licensed copy of Minecraft Java Edition
+echo.        is required to play.  Fabric will be installed automatically if it is not already installed.
 echo.
-echo.        An AU2SB profile will be created in the offical Minecraft Launcher.
-echo.        If you do not yet have Minecraft installed, the launcher will be installed.
-echo.        A licensed copy of Minecraft Java Edition is required to play.
-echo.        Fabric will be installed automatically if it is not already installed.
-echo.
-echo.        At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.
-echo.        The install size will be at least %AU2SB_size% GB, if you don't have enough space you should
-echo.        feel bad about your computer organization.
-echo.
-echo.
+echo.           At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.
+echo.        The install size will be at least %AU2SB_size% GB, if you don't have enough space you should feel
+echo.        bad about your computer organization.
 echo.
 :path_prompt
 echo.        Please input a folder path if you would like to use a custom folder location, or simply
 echo.        press [Enter] if you would like to use the default .minecraft_au2sb folder (recommended).
-echo.
 title %title_prompt%
 set "minecraft_au2sb_folder="
 set /p "minecraft_au2sb_folder=Path: "
@@ -284,8 +308,7 @@ title %title_stopped%
 
 REM uses powershell to move the folder to the recycle bin and delete the profile from the launcher
 if "%startup_selection%"=="3" (
-    set "minecraft_au2sb_folder_uninstall="%minecraft_au2sb_folder%""
-    powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere(!minecraft_au2sb_folder_uninstall!)"
+    powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere('%minecraft_au2sb_folder%')"
     rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
     powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
 echo.
@@ -1139,6 +1162,8 @@ title %title_installing%
 )
 :skip_zerotier
 
+echo.|set /p="%latest_AU2SB_version%" > "%minecraft_au2sb_folder%\version"
+
 title %title_finished%
 echo.
 echo.
@@ -1178,8 +1203,7 @@ echo                                           AU2SB installed!exclaim!
 )
 echo.
 if "%zerotier_note%"=="true" (
-echo        You will need to configure ZeroTier and be authorized before playing AU2SB.
-echo.
+echo        NOTE: You will need to configure ZeroTier and be authorized before playing AU2SB.
 )
 echo.
 echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the official Minecraft Launcher.
