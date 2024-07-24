@@ -1175,6 +1175,7 @@ echo.
 echo.
 echo.
 echo.
+echo.
 echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
 echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
 echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
@@ -1187,12 +1188,9 @@ echo.      '#BBBBBK     jBBBBBBBBBBBB #BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 echo.
 echo            Tips:
 echo        The game will take a few moments to launch, it will ding when finished.  Neat!exclaim!
+echo.
 echo        If the game appears to be "not responding" on the loading screen please wait for a
 echo        moment, it is likely still loading.
-echo.
-echo        You can check for the latest version by running this updater before you start your game
-echo        and compare to your version shown in the Minecraft Launcher, it is shown at the start
-echo        of the updater.
 echo.
 echo.
 REM Check the variables and display the appropriate messages
