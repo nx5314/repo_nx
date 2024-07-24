@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.6"
+set "this_updater_version=1.5.0.7"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -200,11 +200,14 @@ if "%existing_install%"=="true" (
     goto skip_prompt
 )
 echo.
+echo.                                      PLEASE READ THE FOLLOWING
+echo.
 echo.        This installer/updater script will automatically download the required mods and config files.
 echo.        Running this script as administrator is neither necessary nor recommended.
 echo.
 echo.        An AU2SB profile will be created in the offical Minecraft Launcher.
 echo.        If you do not yet have Minecraft installed, the launcher will be installed.
+echo.        A licensed copy of Minecraft Java Edition is required to play.
 echo.        Fabric will be installed automatically if it is not already installed.
 echo.
 echo.        At least 8 GB of system RAM is required to play AU2SB.  Installing on an SSD is recommended.
