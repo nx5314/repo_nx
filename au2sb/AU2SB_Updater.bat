@@ -81,7 +81,7 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	pause
 	exit /b
 )
-REM Check AU2SB version
+REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
