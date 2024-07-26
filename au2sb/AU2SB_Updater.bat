@@ -59,10 +59,10 @@ echo.        d8b  Y88b
 echo.        Y8P   Y88b. 
 echo.               'Y88 
 echo.
-echo        Winget is not installed or not found in PATH.
+echo        Winget is not installed or not found in your environment variables.
 echo        Please download and install from: https://aka.ms/getwinget
-    pause
-    exit /b
+pause
+exit /b
 )
 set "updater_download_path=%cd%"
 REM Compare versions
