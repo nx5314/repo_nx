@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.9"
+set "this_updater_version=1.5.0.10"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -87,6 +87,8 @@ set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
 if exist "%current_minecraft_au2sb_folder%\version" (
 set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\version"
+) else (
+    set "current_AU2SB_version="
 )
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
 REM Check AU2SB size
@@ -101,8 +103,8 @@ set /A user_RAM_GB=%user_RAM%/1024
 REM user_RAM_max caps the user to 90% of their total RAM
 set /A user_RAM_max=9*user_RAM_GB/10
 
-REM Presence of "%appdata%\.minecraft_au2sb\path" determines existing_install
-if exist "%appdata%\.minecraft_au2sb\path" (
+REM version determines existing_install
+if not "%current_AU2SB_version%"=="" (
     set "existing_install=true"
 ) else (
     set "existing_install=false"
