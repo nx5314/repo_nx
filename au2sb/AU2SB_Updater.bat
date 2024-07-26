@@ -4,7 +4,7 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.8"
+set "this_updater_version=1.5.0.9"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -30,6 +30,7 @@ REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 REM check if curl works -_-
 if "%latest_updater_version%"=="" (
+title %title_failed%
 echo.
 echo.               .d88 
 echo.        d8b   d88P' 
@@ -44,6 +45,24 @@ echo        It looks like your Windows installation is somehow messed up, the cu
 echo        Why have you done this.
 pause
 exit /b
+)
+winget >nul 2>&1
+if %errorlevel% neq 0 (
+title %title_failed%
+echo.
+echo.               .d88 
+echo.        d8b   d88P' 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               'Y88 
+echo.
+echo        Winget is not installed or not found in PATH.
+echo        Please download and install from: https://aka.ms/getwinget
+    pause
+    exit /b
 )
 set "updater_download_path=%cd%"
 REM Compare versions
@@ -245,9 +264,71 @@ echo.
 echo.        Please input a folder path if you would like to use a custom folder location, or simply
 echo.        press [Enter] if you would like to use the default .minecraft_au2sb folder (recommended).
 title %title_prompt%
-set "minecraft_au2sb_folder="
-set /p "minecraft_au2sb_folder=Path: "
+set "input_path="
+set /p "input_path=Path: "
 title %title_normal%
+if "%input_path%"=="" set "input_path=%appdata%\.minecraft_au2sb" >nul
+
+REM Remove trailing slash if it exists and clear quotation marks
+if "%input_path:~-1%"=="\" set "input_path=%input_path:~0,-1%"
+set "input_path=%input_path:"=%"
+
+REM Define disallowed paths and invalid characters
+set "dont_use=C:,C:\Program Files,C:\ProgramData"
+set "dont_include=C:\Program Files,C:\ProgramData,C:\Windows"
+set "invalid_chars=^<^>^:^|^?^*"
+
+REM Check if the path contains any invalid characters
+for %%i in (%invalid_chars%) do (
+    echo.%input_path%|findstr /C:"%%i" >nul && (
+        echo.
+        echo This path contains invalid characters.
+        @timeout /t 3 /nobreak >nul
+        goto path_prompt
+    )
+)
+REM Check if the path is disallowed
+for %%a in (%dont_use%) do (
+    if /i "%input_path%"=="%%a" (
+        echo.
+        echo This path is disallowed.
+        @timeout /t 3 /nobreak >nul
+        goto path_prompt
+    )
+)
+REM Check if the path includes disallowed path
+for %%a in (%dont_include%) do (
+    echo.%input_path% | findstr /I /C:"%%a" >nul && (
+        echo.
+        echo This path is disallowed.
+        goto path_prompt
+    )
+)
+REM Check if the path is a file
+if exist "%input_path%" if not exist "%input_path%\" (
+    echo.
+    echo This path is a file, not a folder.
+    goto path_prompt
+)
+REM Confirm the path
+echo.
+echo You've input %input_path%
+set /p "confirm_path=Are you sure this is where you want to install? ([y]es / no [Enter]): "
+echo !confirm_path! | findstr /I /C:"y" >nul && (
+    echo Confirmed input as %input_path%
+) || (
+    goto path_prompt
+)
+REM Check if the folder is empty
+for /f %%A in ('dir /b "%input_path%\*"') do (
+    if "%%A" neq "" (
+        echo.
+        echo This folder is not empty.
+        goto path_prompt
+    )
+)
+
+set "minecraft_au2sb_folder=%input_path%"
 
 :skip_prompt
 
@@ -256,6 +337,7 @@ if "%minecraft_au2sb_folder%"=="" if not "%startup_selection%"=="4" set /p minec
 if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 if "%minecraft_au2sb_folder%"=="%appdata%\.minecraft" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
 set "base_minecraft_folder=%appdata%\.minecraft" >nul
+
 if not "%startup_selection%"=="4" (
     echo.
     echo AU2SB install path is %minecraft_au2sb_folder%
@@ -443,6 +525,15 @@ if "%fabric_exists%"=="false" (
 	echo.
 	echo Fabric appears to not be installed, downloading now...
     curl -L https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.1/fabric-installer-1.0.1.jar --output "%temp%\fabric-installer.jar"
+    REM Check the size of the downloaded file
+    for %%A in ("%temp%\fabric-installer.jar") do set fabric_installer=%%~zA
+    REM If the file size is less than 1000 bytes, indicate the mods download failed
+    if !fabric_installer! LSS 1000 (
+        echo.
+        echo ERROR: The fabric installer download failed
+        set "fail_state=true"
+        goto cleanup
+    )
 	echo.
     java -jar %temp%\fabric-installer.jar client -mcversion 1.20.1 -dir %appdata%\.minecraft
 ) else (
@@ -471,7 +562,7 @@ REM Check if fabric was able to install
 ::   .d88P                            
 :: .d88P"                             
 ::888P"
-
+:java_install
 REM If java needs to be installed
 set proceed_with_java_install=null
 if "%need_java%"=="true" (
