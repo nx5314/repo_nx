@@ -4,7 +4,8 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set "this_updater_version=1.5.0.10"
+:start
+set "this_updater_version=1.5.1"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -113,6 +114,7 @@ if not "%current_AU2SB_version%"=="" (
 REM Make folder
 if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
 
+:intro
 REM Intro
 echo.
 echo                       z444444444444m 144444  44444m ^|444444444444m 1444444444444m 1444444444444m
@@ -195,7 +197,7 @@ title %title_normal%
         goto skip_prompt
     ) || (
         echo.
-        goto retry_selection
+        goto start
     )
 )
 
@@ -312,10 +314,10 @@ echo.
 echo Press any key to return to the Options...
 pause >nul
 echo.
-goto retry_selection
+goto start
     ) || (
         echo.
-        goto retry_selection
+        goto start
     )
 )
 
@@ -352,7 +354,7 @@ echo.
 echo Press any key to return to the Options...
 pause >nul
 echo.
-goto retry_selection
+goto start
 )
 
 ::8888888b.          888    888           8888888b.                                         888    
@@ -874,19 +876,11 @@ powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; '
 
 if "%startup_selection%"=="4" (
 echo        AU2SB successfully moved!exclaim!
-title %title_prompt%
-    set /p "back_to_start=Return to option selection? ([y]es / no [Enter]): "
-title %title_normal%
-    echo.
-    REM If the user input is 'y' or 'yes', go back to start
-    echo !back_to_start! | findstr /I /C:"y" >nul && (
-        goto :retry_selection
-    ) || (
-        title %title_finished%
-        echo Press any key to exit.
-        pause >nul
-        exit /b
-    )
+title %title_finished%
+echo Press any key to return to the Options...
+pause >nul
+echo.
+goto start
 )
 
 REM Fetch the URL for the downloads
@@ -1443,4 +1437,4 @@ echo.
 echo Press any key to return to the Options...
 pause >nul
 echo.
-goto retry_selection
+goto start
