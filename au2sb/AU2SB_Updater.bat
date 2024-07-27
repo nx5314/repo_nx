@@ -169,12 +169,13 @@ echo         1. Update
 echo         2. Modify and update
 echo         3. Uninstall
 echo         4. Move install location
-echo         5. About
+echo         5. Distant Horizons Data
+echo         6. About
 echo.
     title %title_prompt%
     set /p "startup_selection=Select: "
-    if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" if not "!startup_selection!"=="5" (
-        echo Invalid selection, please enter a number between 1 and 5.
+    if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" if not "!startup_selection!"=="5" if not "!startup_selection!"=="6" (
+        echo Invalid selection, please enter a number between 1 and 6.
         echo.
         goto retry_selection
     )
@@ -206,7 +207,128 @@ echo.
 goto path_prompt
 )
 
+::8888888b.  d8b          888                      888         888    888                  d8b                                     
+::888  "Y88b Y8P          888                      888         888    888                  Y8P                                     
+::888    888              888                      888         888    888                                                          
+::888    888 888 .d8888b  888888  8888b.  88888b.  888888      8888888888  .d88b.  888d888 888 88888888  .d88b.  88888b.  .d8888b  
+::888    888 888 88K      888        "88b 888 "88b 888         888    888 d88""88b 888P"   888    d88P  d88""88b 888 "88b 88K      
+::888    888 888 "Y8888b. 888    .d888888 888  888 888         888    888 888  888 888     888   d88P   888  888 888  888 "Y8888b. 
+::888  .d88P 888      X88 Y88b.  888  888 888  888 Y88b.       888    888 Y88..88P 888     888  d88P    Y88..88P 888  888      X88 
+::8888888P"  888  88888P'  "Y888 "Y888888 888  888  "Y888      888    888  "Y88P"  888     888 88888888  "Y88P"  888  888  88888P' 
+
 if "%startup_selection%"=="5" (
+if exist "%current_minecraft_au2sb_folder%\dh_date" (
+set /p dh_date_prev=<"%current_minecraft_au2sb_folder%\dh_date"
+) else (
+    set "dh_date_prev="
+)
+REM Check LOD date and size
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.txt') do set "dh_date=%%i"
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_size.txt') do set "dh_size=%%i"
+echo.
+echo This will download the latest Distant Horizons LOD data and REPLACE any existing data you have.
+echo The game cannot be running during this.
+if not "!dh_date_prev!"=="" (
+echo Your existing LOD data will be backed up and can be reverted until the next time you download LOD.
+)
+echo.
+echo  The latest update was at !dh_date! and the download size will be !dh_size!
+if not "!dh_date_prev!"=="" (
+echo Your last download was at !dh_date_prev!
+)
+echo.
+set /p "dh_download_confirm=Please confirm to download ([y]es / no [Enter]): "
+title %title_normal%
+    REM If the user input is 'y' or 'yes', uninstall
+    echo !dh_download_confirm! | findstr /I /C:"y" >nul && (
+
+:javaw_check_dh
+set "ERRORLEVEL=0"
+REM Check if javaw.exe is running
+tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo If Minecraft is currently running, please close it before proceeding.
+    pause
+    goto javaw_check_dh
+) else (
+    echo Minecraft is not running, proceeding...
+)
+
+REM Distant Horizons download
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh.txt') do (set "dh_url=%%i")
+
+if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data" (
+    REM delete any old LOD folder if exists
+    if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" (
+        rmdir "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" /s /q
+    )
+    REM rename existing LOD folder
+    move "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data" "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" 
+)
+
+REM Download, extract, and move config
+echo Downloading Distant Horizons LOD...
+curl -L "%dh_url%" --output "%temp%\au2sb_dh.zip"
+
+REM Check the size of the downloaded file
+for %%A in ("%temp%\au2sb_dh.zip") do set dh_dl_size=%%~zA
+REM If the file size is less than 10MB (in bytes), indicate the mods download failed
+if !dh_dl_size! LSS 10000000 (
+    echo The download failed, please report that the Distant Horizons LOD download needs to be fixed
+    set "fail_state=true"
+    goto dh_cleanup
+)
+
+echo Extracting Distant Horizons LOD...
+mkdir "%temp%\au2sb_dh"
+tar -xf "%temp%\au2sb_dh.zip" -C "%temp%\au2sb_dh" 2>&1 >nul
+echo Moving Distant Horizons LOD to %current_minecraft_au2sb_folder%...
+robocopy "%temp%\au2sb_dh" "%current_minecraft_au2sb_folder%" /s /r:100 /move /xo /log:"%temp%\au2sb_config.log" 2>&1 >nul
+
+REM save date
+curl -s -L https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.txt --output "%current_minecraft_au2sb_folder%\dh_date"
+
+:dh_cleanup
+echo Cleaning up...
+del "%temp%\au2sb_dh.zip" /q 2>&1 >nul
+if exist "%temp%\au2sb_dh" (
+rmdir "%temp%\au2sb_dh"
+)
+echo.
+echo.
+echo.
+echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
+echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
+echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
+echo.     jK           BM    BK    zg      jB    jB           jB           BP          jB     BP    #K    jk
+echo.     #'    BBBBBBBB     BM    BK,     BK    jBBBBBBBP    jB    jB'    BK    jBBBBBBBW    #K    jBPPPPPB
+echo.    jP    jBBBBBBBK    jB     BBB     BK    jB           jB    jB-    #b           BK           Bk    jC
+echo.    #WgggggBBBPTTtWgggggBgggggBBBgggggBkgggggBggggggggggggBgggggBkgggggBggggggggggggBggggggggggBBBgggggB
+echo.     TBBBBBBBB    jBBBBBBBBBBBBBhBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBP
+echo.      '#BBBBBK     jBBBBBBBBBBBB #BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCjBBBBBB-
+echo.
+echo                                                 LOD updated.
+echo.
+echo Press any key to return to the Options...
+pause >nul
+echo.
+goto retry_selection
+    ) || (
+        echo.
+        goto retry_selection
+    )
+)
+
+::       d8888 888                        888    
+::      d88888 888                        888    
+::     d88P888 888                        888    
+::    d88P 888 88888b.   .d88b.  888  888 888888 
+::   d88P  888 888 "88b d88""88b 888  888 888    
+::  d88P   888 888  888 888  888 888  888 888    
+:: d8888888888 888 d88P Y88..88P Y88b 888 Y88b.  
+::d88P     888 88888P"   "Y88P"   "Y88888  "Y888 
+
+if "%startup_selection%"=="6" (
 echo.
 echo    About:
 echo.
@@ -321,14 +443,15 @@ echo !confirm_path! | findstr /I /C:"y" >nul && (
 ) || (
     goto path_prompt
 )
-REM Check if the folder is empty
+REM Check if the folder is empty excluding the path file
 for /f %%A in ('dir /b "%input_path%\*"') do (
-    if "%%A" neq "" (
+    if "%%A" neq "path" (
         echo.
         echo This folder is not empty.
         goto path_prompt
     )
 )
+
 
 set "minecraft_au2sb_folder=%input_path%"
 
@@ -357,6 +480,24 @@ if not exist "%minecraft_au2sb_folder%" (
     goto fail_end
 ) else (
     echo The folder %minecraft_au2sb_folder% exists and you have access to it.
+)
+
+:: .d8888b.  888                        888                                      
+::d88P  Y88b 888                        888                                      
+::888    888 888                        888                                      
+::888        88888b.   .d88b.   .d8888b 888  888       .d88b.  888  888  .d88b.  
+::888        888 "88b d8P  Y8b d88P"    888 .88P      d8P  Y8b `Y8bd8P' d8P  Y8b 
+::888    888 888  888 88888888 888      888888K       88888888   X88K   88888888 
+::Y88b  d88P 888  888 Y8b.     Y88b.    888 "88b      Y8b.     .d8""8b. Y8b.     
+:: "Y8888P"  888  888  "Y8888   "Y8888P 888  888       "Y8888  888  888  "Y8888  
+
+REM Check if javaw.exe is running
+:javaw_check
+tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
+if "%ERRORLEVEL%"=="0" (
+    echo Minecraft is currently running. Please close it before proceeding.
+    pause
+    goto javaw_check
 )
 
 REM Check if MinecraftLauncher.exe is running
@@ -1299,6 +1440,7 @@ echo        NOTE: You will need to configure ZeroTier and be authorized before p
 echo.
 echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the official Minecraft Launcher.
 echo.
-echo Press any key to exit.
+echo Press any key to return to the Options...
 pause >nul
-exit
+echo.
+goto retry_selection
