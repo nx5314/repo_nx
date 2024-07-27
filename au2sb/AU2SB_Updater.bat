@@ -851,6 +851,33 @@ title %title_installing%
     goto input_loop
 )
 
+::888     888          d8b                  
+::888     888          Y8P                  
+::888     888                               
+::Y88b   d88P  .d88b.  888  .d8888b .d88b.  
+:: Y88b d88P  d88""88b 888 d88P"   d8P  Y8b 
+::  Y88o88P   888  888 888 888     88888888 
+::   Y888P    Y88..88P 888 Y88b.   Y8b.     
+::    Y8P      "Y88P"  888  "Y8888P "Y8888  
+
+REM ask if the user will be unable to use Simple Voice Chat
+title %title_prompt%
+echo Please ignore this [Enter] if you don't know what this means.
+set /p "uninstall_confirm=Do you need to disable SVC? ([y]es / no [Enter]): "
+title %title_normal%
+    REM If the user input is 'y' or 'yes', uninstall
+    echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
+        echo.
+        echo Use the command [/dvc start] in-game.
+        set "dvc=true"
+        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+    ) || (
+        echo.
+        echo Continuing...
+        set "dvc=false"
+        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+)
+
 :update_start
 title %title_installing%
 
@@ -1331,6 +1358,14 @@ if "%resourcepacks_uptodate%"=="false" (
 )
 del "%temp%\au2sb_extras.zip" /q 2>&1 >nul
 rmdir "%temp%\au2sb" /s /q
+
+REM delete voicechat if dvc true
+if exist "%minecraft_au2sb_folder%\dvc" (
+set /p dvc=<"%minecraft_au2sb_folder%\dvc"
+)
+if "%dvc%"=="true" (
+    del "%minecraft_au2sb_folder%\mods\voicechat-fabric-*.jar" /s /q
+)
 
 :fail_end
 REM Exit if in failed state
