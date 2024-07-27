@@ -24,8 +24,6 @@ set "exclaim=^!"
 REM Define the path to the launcher_profiles.json file
 set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
 
-set "startup_selection=0"
-
 title %title_normal%
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
@@ -45,7 +43,7 @@ echo.
 echo        It looks like your Windows installation is somehow messed up, the curl.exe is not functioning or is missing.
 echo        Why have you done this.
 pause
-exit /b
+exit
 )
 winget >nul 2>&1
 if %errorlevel% neq 0 (
@@ -63,7 +61,7 @@ echo.
 echo        Winget is not installed or not found in your environment variables.
 echo        Please download and install from: https://aka.ms/getwinget
 pause
-exit /b
+exit
 )
 set "updater_download_path=%cd%"
 REM Compare versions
@@ -80,7 +78,7 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
     %updater_download_path%\AU2SB_Updater.bat
     echo.
 	pause
-	exit /b
+	exit
 )
 REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
@@ -147,7 +145,7 @@ echo        Or maybe it would work, I don't know, probably not though.  Doubt an
 echo        I really hope.  For your sake.
 title %title_stopped%
     pause
-    exit /b
+    exit
 )
 
 :: .d88888b.           888    d8b                            
@@ -165,19 +163,19 @@ title %title_stopped%
 REM show options if existing install
 if "%existing_install%"=="true" (
     :retry_selection
-set "startup_selection=0"
+set "startup_selection=47"
 echo    Options:
 echo         1. Update
 echo         2. Modify and update
 echo         3. Uninstall
 echo         4. Move install location
-echo         5. Distant Horizons Data
+echo         5. Distant Horizons LOD
 echo         6. About
 echo         0. Exit
 echo.
     title %title_prompt%
     set /p "startup_selection=Select: "
-    if "!startup_selection!"=="9" exit
+    if "!startup_selection!"=="0" exit
     if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" if not "!startup_selection!"=="5" if not "!startup_selection!"=="6" (
         echo Invalid selection.
         echo.
@@ -522,7 +520,7 @@ title %title_stopped%
         echo Please close the Minecraft Launcher and run the updater again.
         echo Press any key to exit.
         pause >nul
-        exit /b
+        exit
     )
 )
 
@@ -559,7 +557,7 @@ title %title_finished%
 echo.
 echo Press any key to exit.
 pause >nul
-    exit /b
+    exit
 )
 
 REM uses robocopy to move the existing folder to the specified location
@@ -584,7 +582,7 @@ title %title_installing%
         echo Please download and install the Minecraft Launcher and run the AU2SB installer again.
 echo Press any key to exit.
 pause >nul
-        exit /b
+        exit
     )
 )
 
@@ -645,7 +643,7 @@ title %title_installing%
 title %title_stopped%
 echo Press any key to exit.
 pause >nul
-        exit /b
+        exit
     )
 ) else (
     echo Checking profiles...
@@ -731,7 +729,7 @@ title %title_installing%
 title %title_stopped%
     echo Press any key to exit.
     pause >nul
-    exit /b
+    exit
 )
 
 if "%proceed_with_java_install%"=="false" (
@@ -739,7 +737,7 @@ title %title_stopped%
     echo Java will not be installed, please install it yourself and run this installer again to finish installing AU2SB
     echo Press any key to exit.
     pause >nul
-    exit /b
+    exit
 )
 
 :fabric_is_installed
@@ -771,7 +769,7 @@ if %user_RAM_GB% lss 8 if "%RAM_unset%"=="true" (
 title %title_prompt%
     set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
 title %title_installing%
-    echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
+    echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit)
     echo.
     goto input_loop
 ) else (
@@ -781,7 +779,7 @@ title %title_installing%
 title %title_prompt%
         set /p "proceed_low_RAM=Do you want to proceed? ([y]es / no [Enter]): "
 title %title_installing%
-        echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit /b)
+        echo !proceed_low_RAM! | findstr /I /C:"y" >nul || (pause && exit)
         echo.
         goto input_loop
     )
@@ -1356,7 +1354,7 @@ title %title_failed%
 echo Something went wrong along the way, please report the issue and save the terminal output for reference.
 echo Press any key to exit.
     pause >nul
-    exit /b
+    exit
 )
 
 ::8888888888P                         888    d8b                  
