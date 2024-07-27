@@ -169,7 +169,7 @@ echo         1. Update
 echo         2. Modify and update
 echo         3. Uninstall
 echo         4. Move install location
-echo         5. Distant Horizons LOD
+echo         5. Distant Horizons LOD ◀ NEW!exclaim!
 echo         6. About
 echo         0. Exit
 echo.
