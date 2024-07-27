@@ -173,13 +173,13 @@ echo         3. Uninstall
 echo         4. Move install location
 echo         5. Distant Horizons Data
 echo         6. About
-echo         9. Exit
+echo         0. Exit
 echo.
     title %title_prompt%
     set /p "startup_selection=Select: "
     if "!startup_selection!"=="9" exit
     if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" if not "!startup_selection!"=="5" if not "!startup_selection!"=="6" (
-        echo Invalid selection, please enter a number between 1 and 6.
+        echo Invalid selection.
         echo.
         goto retry_selection
     )
