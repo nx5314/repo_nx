@@ -5,7 +5,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :start
-set "this_updater_version=1.5.1"
+set "this_updater_version=1.5.1.0"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -176,6 +176,26 @@ echo.
     title %title_prompt%
     set /p "startup_selection=Select: "
     if "!startup_selection!"=="0" exit
+    if "!startup_selection!"=="yeet" (
+        echo.
+        echo Use the command [/dvc start] in-game and connect to the DVC channel in Discord.
+        set "dvc=true"
+        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+        echo Press any key to continue...
+        pause >nul
+        echo.
+        set "startup_selection=1"
+    )
+    if "!startup_selection!"=="unyeet" (
+        echo.
+        echo Unyeeten.
+        set "dvc=false"
+        del "%minecraft_au2sb_folder%\dvc" /s /q
+        echo Press any key to continue...
+        pause >nul
+        echo.
+        set "startup_selection=1"
+    )
     if not "!startup_selection!"=="1" if not "!startup_selection!"=="2" if not "!startup_selection!"=="3" if not "!startup_selection!"=="4" if not "!startup_selection!"=="5" if not "!startup_selection!"=="6" (
         echo Invalid selection.
         echo.
@@ -860,23 +880,23 @@ title %title_installing%
 ::   Y888P    Y88..88P 888 Y88b.   Y8b.     
 ::    Y8P      "Y88P"  888  "Y8888P "Y8888  
 
-REM ask if the user will be unable to use Simple Voice Chat
-title %title_prompt%
-echo Please ignore this [Enter] if you don't know what this means.
-set /p "uninstall_confirm=Do you need to disable SVC? ([y]es / no [Enter]): "
-title %title_normal%
-    REM If the user input is 'y' or 'yes', uninstall
-    echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
-        echo.
-        echo Use the command [/dvc start] in-game.
-        set "dvc=true"
-        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
-    ) || (
-        echo.
-        echo Continuing...
-        set "dvc=false"
-        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
-)
+::REM ask if the user will be unable to use Simple Voice Chat
+::title %title_prompt%
+::echo Please ignore this [Enter] if you don't know what this means.
+::set /p "uninstall_confirm=Do you need to disable SVC? ([y]es / no [Enter]): "
+::title %title_normal%
+::    REM If the user input is 'y' or 'yes', uninstall
+::    echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
+::        echo.
+::        echo Use the command [/dvc start] in-game.
+::        set "dvc=true"
+::        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+::    ) || (
+::        echo.
+::        echo Continuing...
+::        set "dvc=false"
+::        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+::)
 
 :update_start
 title %title_installing%
