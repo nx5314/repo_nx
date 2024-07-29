@@ -260,7 +260,7 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 echo.
 if not "%startup_selection%"=="5" (
 echo Would you like to download the latest Distant Horizons LOD data?
-echo The download size will be !dh_size!
+echo The download size will be !dh_size! GB
 goto dh_prompt
 ) else (
 echo This will download the latest Distant Horizons LOD data and REPLACE any existing data you have.
@@ -270,9 +270,14 @@ if not "!dh_date_prev!"=="" (
 echo Your existing LOD data will be backed up and can be reverted until the next time you download LOD.
 )
 echo.
-echo  The latest update was at !dh_date! and the download size will be !dh_size!
+if "!dh_date!"=="!dh_date_prev!" (
+echo You have already downloaded the latest LOD data from !dh_date!, would you like to redownload?
+echo The download size will be !dh_size! GB
+) else (
+echo  The latest update was at !dh_date! and the download size will be !dh_size! GB
 if not "!dh_date_prev!"=="" (
 echo Your last download was at !dh_date_prev!
+)
 )
 :dh_prompt
 echo.
