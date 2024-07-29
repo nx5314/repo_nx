@@ -1015,11 +1015,11 @@ if "!current_mods_url!"=="!mods_url!" (
     (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
 )
 
-if "%startup_selection%"=="1" goto mods_skip_prompt
 REM If mods are up to date offer for user override
 if "%mods_uptodate%"=="true" (
     REM Prompt the user to override mods_uptodate
     echo Your mods appear to be up-to-date.
+if "%startup_selection%"=="1" goto mods_skip_prompt
 title %title_prompt%
     set /p "override_mods=Do you want to override and redownload mods anyway? ([y]es / no [Enter] = config only): "
 title %title_installing%
