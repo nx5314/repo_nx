@@ -5,7 +5,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :start
-set "this_updater_version=1.5.1.1"
+set "this_updater_version=1.5.1.2"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
