@@ -1444,6 +1444,7 @@ echo Press any key to exit.
 
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
+ipconfig /all | findstr /C:"ZeroTier" && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo ZeroTier is not present
 title %title_prompt%
     set /p "zerotier_prompt=Do you still need to install ZeroTier? ([y]es / no [Enter]): "
     echo.
@@ -1459,10 +1460,7 @@ title %title_installing%
         set "zerotier_note=true"
         echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
         echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
-        goto skip_zerotier
     )
-) else (
-    goto skip_zerotier
 )
 :skip_zerotier
 
