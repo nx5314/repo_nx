@@ -304,7 +304,7 @@ if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data" (
 
 REM Download, extract, and move config
 echo Downloading Distant Horizons LOD...
-curl -L "%dh_url%" --output "%temp%\au2sb_dh.zip"
+curl -L "!dh_url!" --output "%temp%\au2sb_dh.zip"
 
 REM Check the size of the downloaded file
 for %%A in ("%temp%\au2sb_dh.zip") do set dh_dl_size=%%~zA
@@ -331,7 +331,7 @@ if exist "%temp%\au2sb_dh.zip" del "%temp%\au2sb_dh.zip" /q 2>&1 >nul
 if exist "%temp%\au2sb_dh" rmdir "%temp%\au2sb_dh"
 if "%existing_install%"=="false" goto update_start
 if "%startup_selection%"=="2" goto update_start
-if "%fail_state%"=="true" (
+if "!fail_state!"=="true" (
     echo.
     echo Press any key to return to the Options...
     pause >nul
