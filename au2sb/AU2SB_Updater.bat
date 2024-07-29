@@ -340,7 +340,7 @@ if "!fail_state!"=="true" (
     echo.
     echo Press any key to return to the Options...
     pause >nul
-    echo.
+    echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
     goto start
 )
 echo. & echo. & echo.
