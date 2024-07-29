@@ -287,7 +287,7 @@ title %title_normal%
     echo !dh_download_confirm! | findstr /I /C:"y" >nul && (
 
 :dh_javaw_check
-set "ERRORLEVEL=0"
+set "ERRORLEVEL="
 REM Check if javaw.exe is running
 tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
 if "%ERRORLEVEL%"=="0" (
@@ -557,6 +557,7 @@ if "%ERRORLEVEL%"=="0" (
 
 REM Check if MinecraftLauncher.exe is running
 :kill_launcher
+set "ERRORLEVEL="
 tasklist /FI "IMAGENAME eq MinecraftLauncher.exe" 2>NUL | find /I /N "MinecraftLauncher.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo Minecraft Launcher is currently running. Please close it before proceeding.
