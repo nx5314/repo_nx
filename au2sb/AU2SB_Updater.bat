@@ -378,29 +378,29 @@ goto start
 if "%startup_selection%"=="6" (
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_size.txt') do set "dh_size=%%i"
 echo.
-echo    About:
+echo          About:
 echo.
-echo    This script automates the installation and updating process for AU2SB, a custom Minecraft modpack.
-echo It checks for the latest version of the updater script, AU2SB, and its components ^(mods, config files,
-echo resource packs, and extra files^).  ^If updates are available, it downloads and installs them.  It also
-echo sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation
-echo of Fabric, a popular mod loader.  The script ensures all components are up to ^date and configures the
-echo game environment ^for AU2SB.  ^If Minecraft is detected not to be installed, the Minecraft Launcher can
-echo be installed automatically.
+echo          This script automates the installation and updating process for AU2SB, a custom Minecraft modpack.
+echo       It checks for the latest version of the updater script, AU2SB, and its components ^(mods, config files,
+echo       resource packs, and extra files^).  ^If updates are available, it downloads and installs them.  It also
+echo       sets up a custom Minecraft Launcher profile with optimized Java arguments and manages the installation
+echo       of Fabric, a popular mod loader.  The script ensures all components are up to ^date and configures the
+echo       game environment ^for AU2SB.  ^If Minecraft is detected not to be installed, the Minecraft Launcher can
+echo       be installed automatically.
 echo.
-echo    Data for the Distant Horizons mod is optionally available to download.  It allows you to see further 
-echo than your "actual" view distance.  Its current download size is !dh_size! GB.
+echo          Data for the Distant Horizons mod is optionally available to download.  It allows you to see further 
+echo       than your ^"actual^" view distance.  Its current download size is !dh_size! GB.
 echo.
-echo    We use ZeroTier for our SD-WAN (sorta like a VPN) so it is required to play.  Basically, it is an 
-echo authorized-only virtual network which keeps the server secure from the wider internet.
+echo          We use ZeroTier for our SD-WAN ^(sorta like a VPN^) so it is required to play.  Basically, it is an 
+echo       authorized-only virtual network which keeps the server secure from the wider internet.
 echo.
-echo    Run the script in a Windows command prompt environment.  It will guide you through the installation
-echo or update process with prompts.
+echo          Run the script in a Windows command prompt environment.  It will guide you through the installation
+echo       or update process with prompts.
 echo.
-echo    Requirements: Internet connection, winget ^(included in Win10/11 by default^) ^for prerequisite
-echo installers, and permissions to access the .minecraft directory.  ^At least 8 GB of system RAM is required
-echo to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB,
-echo if you don't have enough space you should feel bad about your computer organization.
+echo          Requirements: Internet connection, winget ^(included in Win10/11 by default^) ^for prerequisite
+echo       installers, and permissions to access the .minecraft directory.  ^At least 8 GB of system RAM is required
+echo       to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB,
+echo       if you don't have enough space you should feel bad about your computer organization.
 echo. & echo.
 echo Press any key to return to the Options...
 pause >nul
