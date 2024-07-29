@@ -20,13 +20,23 @@ set "title_finished=Finished^! - %title_normal%"
 set "title_stopped=Stopped^! - %title_normal%"
 
 set "exclaim=^!"
+title %title_normal%
 
 REM Define the path to the launcher_profiles.json file
 set "launcher_profiles=%appdata%\.minecraft\launcher_profiles.json"
 
-title %title_normal%
+REM Fetch OS version
+for /F "tokens=2 delims==" %%i in ('wmic os get Version /value') do set os_version=%%i
+for /F "tokens=3 delims=." %%a in ("%os_version%") do set os_build=%%a
+if %os_build% LSS 16299 (
+    echo WARNING: Your Windows version is not at least build 16299. Please update your OS.
+    pause
+    exit
+)
+
 REM Check updater version
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
+
 REM check if curl works -_-
 if "%latest_updater_version%"=="" (
 title %title_failed%
@@ -101,6 +111,7 @@ set user_RAM=%user_RAM:,=%
 set /A user_RAM_GB=%user_RAM%/1024
 REM user_RAM_max caps the user to 90% of their total RAM
 set /A user_RAM_max=9*user_RAM_GB/10
+REM echo RAM in GB: %user_RAM_GB%
 
 REM version determines existing_install
 if not "%current_AU2SB_version%"=="" (
