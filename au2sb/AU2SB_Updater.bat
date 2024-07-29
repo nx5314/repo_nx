@@ -215,9 +215,7 @@ echo.
     title %title_normal%
 )
 
-if "%startup_selection%"=="1" (
-    goto skip_prompt
-)
+if "%startup_selection%"=="1" goto skip_prompt
 
 if "%startup_selection%"=="3" (
 title %title_prompt%
@@ -299,9 +297,7 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 
 if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data" (
     REM delete any old LOD folder if exists
-    if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" (
-        rmdir "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" /s /q
-    )
+    if exist "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" rmdir "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" /s /q
     REM rename existing LOD folder
     move "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data" "%current_minecraft_au2sb_folder%\Distant_Horizons_server_data_OLD" 
 )
@@ -331,16 +327,10 @@ curl -s -L https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.t
 
 :dh_cleanup
 echo Cleaning up...
-del "%temp%\au2sb_dh.zip" /q 2>&1 >nul
-if exist "%temp%\au2sb_dh" (
-rmdir "%temp%\au2sb_dh"
-)
-if "%existing_install%"=="false" (
-    goto update_start
-)
- if "%startup_selection%"=="2" (
-    goto update_start
-)
+if exist "%temp%\au2sb_dh.zip" del "%temp%\au2sb_dh.zip" /q 2>&1 >nul
+if exist "%temp%\au2sb_dh" rmdir "%temp%\au2sb_dh"
+if "%existing_install%"=="false" goto update_start
+if "%startup_selection%"=="2" goto update_start
 if "%fail_state%"=="true" (
     echo.
     echo Press any key to return to the Options...
@@ -923,12 +913,8 @@ title %title_installing%
 )
 
 REM detour to Distant Horizons LOD download
-if "%existing_install%"=="false" (
-    goto dh_start
-)
-if "%startup_selection%"=="2" (
-    goto dh_start
-)
+if "%existing_install%"=="false" goto dh_start
+if "%startup_selection%"=="2" goto dh_start
 
 :update_start
 title %title_installing%
@@ -1131,12 +1117,9 @@ if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
 
 REM Compare the contents of the file with resourcepacks_url
 if "!current_resourcepacks_url!"=="!resourcepacks_url!" (
-    REM If they are the same, set resourcepacks_uptodate to true
     set "resourcepacks_uptodate=true"
-    REM Resourcepacks up-to-date = !resourcepacks_uptodate!
 ) else (
     REM If they are not the same, update the file with the new resourcepacks_url
-    REM Resourcepacks up-to-date = !resourcepacks_uptodate!
     (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
 )
 
@@ -1422,10 +1405,10 @@ if "%dvc%"=="true" (
 :fail_end
 REM Exit if in failed state
 if "%fail_state%"=="true" (
-    echo.
-    echo.
-    echo.
-    echo.
+echo.
+echo.
+echo.
+echo.
 echo.               .d88 
 echo.        d8b   d88P' 
 echo.        Y8P  d88P   
@@ -1434,9 +1417,9 @@ echo.             888
 echo.        d8b  Y88b   
 echo.        Y8P   Y88b. 
 echo.               'Y88 
-    echo.
-    echo.
-    echo.
+echo.
+echo.
+echo.
 title %title_failed%
 echo Something went wrong along the way, please report the issue and save the terminal output for reference.
 echo Press any key to exit.
