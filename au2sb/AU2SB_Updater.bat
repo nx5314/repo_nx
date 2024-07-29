@@ -543,6 +543,7 @@ if not exist "%minecraft_au2sb_folder%" (
 
 REM Check if javaw.exe is running
 :javaw_check
+set "ERRORLEVEL="
 tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo Minecraft is currently running. Please close it before proceeding.
