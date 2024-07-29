@@ -279,7 +279,6 @@ tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo If Minecraft is currently running, please close it before proceeding.
     pause
-    goto dh_javaw_check
 ) else (
     echo Minecraft is not running, proceeding...
 )
