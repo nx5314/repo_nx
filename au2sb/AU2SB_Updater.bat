@@ -1129,11 +1129,11 @@ if "!current_resourcepacks_url!"=="!resourcepacks_url!" (
     (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
 )
 
-if "%startup_selection%"=="1" goto resourcepacks_skip_prompt
 REM If resourcepacks are up to date offer for user override
 if "%resourcepacks_uptodate%"=="true" (
     REM Prompt the user to override resourcepacks_uptodate
     echo Your resourcepacks appear to be up-to-date.
+if "%startup_selection%"=="1" goto resourcepacks_skip_prompt
 title %title_prompt%
     set /p "override_resourcepacks=Do you want to override and redownload resourcepacks anyway? ([y]es / no [Enter] = config only): "
 title %title_installing%
