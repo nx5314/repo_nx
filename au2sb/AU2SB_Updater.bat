@@ -343,9 +343,7 @@ if "!fail_state!"=="true" (
     echo.
     goto start
 )
-echo.
-echo.
-echo.
+echo. & echo. & echo.
 echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
 echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
 echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
@@ -360,7 +358,7 @@ echo                                                 LOD updated.
 echo.
 echo Press any key to return to the Options...
 pause >nul
-echo.
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 goto start
     ) || (
         echo.
@@ -403,11 +401,10 @@ echo    Requirements: Internet connection, winget ^(included in Win10/11 by defa
 echo installers, and permissions to access the .minecraft directory.  ^At least 8 GB of system RAM is required
 echo to play AU2SB.  Installing on an SSD is recommended.  The install size will be at least %AU2SB_size% GB,
 echo if you don't have enough space you should feel bad about your computer organization.
-echo.
-echo.
+echo. & echo.
 echo Press any key to return to the Options...
 pause >nul
-echo.
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 goto start
 )
 
@@ -594,9 +591,7 @@ if "%startup_selection%"=="3" (
     powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere('%minecraft_au2sb_folder%')"
     rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
     powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
-echo.
-echo.
-echo.
+echo. & echo. & echo.
 echo.               .d88 
 echo.        d8b   d88P' 
 echo.        Y8P  d88P   
@@ -605,8 +600,7 @@ echo.             888
 echo.        d8b  Y88b   
 echo.        Y8P   Y88b. 
 echo.               'Y88 
-echo.
-echo.
+echo. & echo.
 echo.        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
 echo.        This script does not uninstall the Minecraft Launcher itself or any other software.
 title %title_finished%
@@ -1418,10 +1412,7 @@ if "%dvc%"=="true" (
 :fail_end
 REM Exit if in failed state
 if "%fail_state%"=="true" (
-echo.
-echo.
-echo.
-echo.
+echo. & echo. & echo. & echo.
 echo.               .d88 
 echo.        d8b   d88P' 
 echo.        Y8P  d88P   
@@ -1430,9 +1421,7 @@ echo.             888
 echo.        d8b  Y88b   
 echo.        Y8P   Y88b. 
 echo.               'Y88 
-echo.
-echo.
-echo.
+echo. & echo. & echo.
 title %title_failed%
 echo Something went wrong along the way, please report the issue and save the terminal output for reference.
 echo Press any key to exit.
@@ -1455,37 +1444,27 @@ ipconfig /all | findstr /C:"ZeroTier" && echo. 2> "%minecraft_au2sb_folder%\zero
 reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "ZeroTier" | findstr "DisplayName" >nul && echo ZeroTier is installed && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo ZeroTier is not installed
 echo We use ZeroTier for our SD-WAN so it is required to play
 title %title_prompt%
-    set /p "zerotier_prompt=Please confirm to install ZeroTier ([c]onfirm / skip [Enter]): "
+    set /p "zerotier_prompt=Please confirm to install ZeroTier ([y]es / no [Enter]): "
     echo.
-    REM If the user input is 'y' or 'yes', install zerotier
-    echo !zerotier_prompt! | findstr /I /C:"c" >nul && (
-title %title_installing%
-        set "zerotier_note=true"
-        echo Installing ZeroTier now...
-        winget.exe install --id ZeroTier.ZeroTierOne --exact
-        REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
-        echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
-    ) || (
-        set "zerotier_note=true"
-        echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
-    )
+    REM If the user input confirms, install zerotier
+    echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
+    title %title_installing%
+            set "zerotier_note=true"
+            echo Installing ZeroTier now...
+            winget.exe install --id ZeroTier.ZeroTierOne --exact
+            REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
+            echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+        ) || (
+            set "zerotier_note=true"
+            echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
+        )
 )
 :skip_zerotier
 
 echo.|set /p="%latest_AU2SB_version%" > "%minecraft_au2sb_folder%\version"
 
 title %title_finished%
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
 echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
 echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
@@ -1518,5 +1497,5 @@ echo        Start your game with the AU2SB %latest_AU2SB_version% profile in the
 echo.
 echo Press any key to return to the Options...
 pause >nul
-echo.
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 goto start
