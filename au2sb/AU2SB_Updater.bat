@@ -378,6 +378,7 @@ goto start
 ::d88P     888 88888P"   "Y88P"   "Y88888  "Y888 
 
 if "%startup_selection%"=="6" (
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_size.txt') do set "dh_size=%%i"
 echo.
 echo    About:
 echo.
@@ -388,6 +389,12 @@ echo sets up a custom Minecraft Launcher profile with optimized Java arguments a
 echo of Fabric, a popular mod loader.  The script ensures all components are up to ^date and configures the
 echo game environment ^for AU2SB.  ^If Minecraft is detected not to be installed, the Minecraft Launcher can
 echo be installed automatically.
+echo.
+echo    Data for the Distant Horizons mod is optionally available to download.  It allows you to see further 
+echo than your "actual" view distance.  Its current download size is !dh_size! GB.
+echo.
+echo    We use ZeroTier for our SD-WAN (sorta like a VPN) so it is required to play.  Basically, it is an 
+echo authorized-only virtual network which keeps the server secure from the wider internet.
 echo.
 echo    Run the script in a Windows command prompt environment.  It will guide you through the installation
 echo or update process with prompts.
@@ -1444,12 +1451,14 @@ echo Press any key to exit.
 
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
-ipconfig /all | findstr /C:"ZeroTier" && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo ZeroTier is not present
+ipconfig /all | findstr /C:"ZeroTier" && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo No ZeroTier network detected
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "ZeroTier" | findstr "DisplayName" >nul && echo ZeroTier is installed && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo ZeroTier is not installed
+echo We use ZeroTier for our SD-WAN so it is required to play
 title %title_prompt%
-    set /p "zerotier_prompt=Do you still need to install ZeroTier? ([y]es / no [Enter]): "
+    set /p "zerotier_prompt=Please confirm to install ZeroTier ([c]onfirm / skip [Enter]): "
     echo.
     REM If the user input is 'y' or 'yes', install zerotier
-    echo !zerotier_prompt! | findstr /I /C:"y" >nul && (
+    echo !zerotier_prompt! | findstr /I /C:"c" >nul && (
 title %title_installing%
         set "zerotier_note=true"
         echo Installing ZeroTier now...
@@ -1459,7 +1468,6 @@ title %title_installing%
     ) || (
         set "zerotier_note=true"
         echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
-        echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
     )
 )
 :skip_zerotier
