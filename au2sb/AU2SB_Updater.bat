@@ -314,7 +314,8 @@ REM Check the size of the downloaded file
 for %%A in ("%temp%\au2sb_dh.zip") do set dh_dl_size=%%~zA
 REM If the file size is less than 10MB (in bytes), indicate the mods download failed
 if !dh_dl_size! LSS 10000000 (
-    echo The download failed, please report that the Distant Horizons LOD download needs to be fixed
+    title %title_failed%
+    echo WARNING: The download failed, please report that the Distant Horizons LOD download needs to be fixed
     set "fail_state=true"
     goto dh_cleanup
 )
@@ -339,6 +340,13 @@ if "%existing_install%"=="false" (
 )
  if "%startup_selection%"=="2" (
     goto update_start
+)
+if "%fail_state%"=="true" (
+    echo.
+    echo Press any key to return to the Options...
+    pause >nul
+    echo.
+    goto start
 )
 echo.
 echo.
