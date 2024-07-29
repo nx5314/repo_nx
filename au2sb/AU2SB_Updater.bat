@@ -5,7 +5,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :start
-set "this_updater_version=1.5.1.0"
+set "this_updater_version=1.5.1.1"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -169,7 +169,7 @@ echo         1. Update
 echo         2. Modify and update
 echo         3. Uninstall
 echo         4. Move install location
-echo         5. Distant Horizons LOD ◀ NEW!exclaim!
+echo         5. Distant Horizons LOD - NEW!exclaim!
 echo         6. About
 echo         0. Exit
 echo.
@@ -239,6 +239,7 @@ goto path_prompt
 ::8888888P"  888  88888P'  "Y888 "Y888888 888  888  "Y888      888    888  "Y88P"  888     888 88888888  "Y88P"  888  888  88888P' 
 
 if "%startup_selection%"=="5" (
+:dh_start
 if exist "%current_minecraft_au2sb_folder%\dh_date" (
 set /p dh_date_prev=<"%current_minecraft_au2sb_folder%\dh_date"
 ) else (
@@ -248,8 +249,14 @@ REM Check LOD date and size
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.txt') do set "dh_date=%%i"
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_size.txt') do set "dh_size=%%i"
 echo.
+if not "%startup_selection%"=="5" (
+echo Would you like to download the latest Distant Horizons LOD data?
+echo The download size will be !dh_size!
+goto dh_prompt
+) else (
 echo This will download the latest Distant Horizons LOD data and REPLACE any existing data you have.
 echo The game cannot be running during this.
+)
 if not "!dh_date_prev!"=="" (
 echo Your existing LOD data will be backed up and can be reverted until the next time you download LOD.
 )
@@ -258,20 +265,21 @@ echo  The latest update was at !dh_date! and the download size will be !dh_size!
 if not "!dh_date_prev!"=="" (
 echo Your last download was at !dh_date_prev!
 )
+:dh_prompt
 echo.
 set /p "dh_download_confirm=Please confirm to download ([y]es / no [Enter]): "
 title %title_normal%
     REM If the user input is 'y' or 'yes', uninstall
     echo !dh_download_confirm! | findstr /I /C:"y" >nul && (
 
-:javaw_check_dh
+:dh_javaw_check
 set "ERRORLEVEL=0"
 REM Check if javaw.exe is running
 tasklist /FI "IMAGENAME eq javaw.exe" 2>NUL | find /I /N "javaw.exe">NUL
 if "%ERRORLEVEL%"=="0" (
     echo If Minecraft is currently running, please close it before proceeding.
     pause
-    goto javaw_check_dh
+    goto dh_javaw_check
 ) else (
     echo Minecraft is not running, proceeding...
 )
@@ -315,6 +323,12 @@ echo Cleaning up...
 del "%temp%\au2sb_dh.zip" /q 2>&1 >nul
 if exist "%temp%\au2sb_dh" (
 rmdir "%temp%\au2sb_dh"
+)
+if "%existing_install%"=="false" (
+    goto update_start
+)
+ if "%startup_selection%"=="2" (
+    goto update_start
 )
 echo.
 echo.
@@ -480,10 +494,11 @@ set "minecraft_au2sb_folder=%input_path%"
 :skip_prompt
 
 REM If the user enters nothing, set minecraft_au2sb_folder to %appdata%\.minecraft_au2sb
-if "%minecraft_au2sb_folder%"=="" if not "%startup_selection%"=="4" set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path" >nul
-if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
-if "%minecraft_au2sb_folder%"=="%appdata%\.minecraft" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb" >nul
-set "base_minecraft_folder=%appdata%\.minecraft" >nul
+if "%minecraft_au2sb_folder%"=="" if not "%startup_selection%"=="4" set /p minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
+if "%minecraft_au2sb_folder%"=="" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb"
+if "%minecraft_au2sb_folder%"=="%appdata%\.minecraft" set "minecraft_au2sb_folder=%appdata%\.minecraft_au2sb"
+set "base_minecraft_folder=%appdata%\.minecraft"
+set "current_minecraft_au2sb_folder=%minecraft_au2sb_folder%"
 
 if not "%startup_selection%"=="4" (
     echo.
@@ -580,6 +595,15 @@ pause >nul
     exit
 )
 
+::888b     d888                            
+::8888b   d8888                            
+::88888b.d88888                            
+::888Y88888P888  .d88b.  888  888  .d88b.  
+::888 Y888P 888 d88""88b 888  888 d8P  Y8b 
+::888  Y8P  888 888  888 Y88  88P 88888888 
+::888   "   888 Y88..88P  Y8bd8P  Y8b.     
+::888       888  "Y88P"    Y88P    "Y8888  
+
 REM uses robocopy to move the existing folder to the specified location
 if "%startup_selection%"=="4" (
     echo Moving installation to %minecraft_au2sb_folder%
@@ -605,6 +629,15 @@ pause >nul
         exit
     )
 )
+
+::8888888b.                   .d888 d8b 888                .d8888b.  888                        888      
+::888   Y88b                 d88P"  Y8P 888               d88P  Y88b 888                        888      
+::888    888                 888        888               888    888 888                        888      
+::888   d88P 888d888 .d88b.  888888 888 888  .d88b.       888        88888b.   .d88b.   .d8888b 888  888 
+::8888888P"  888P"  d88""88b 888    888 888 d8P  Y8b      888        888 "88b d8P  Y8b d88P"    888 .88P 
+::888        888    888  888 888    888 888 88888888      888    888 888  888 88888888 888      888888K  
+::888        888    Y88..88P 888    888 888 Y8b.          Y88b  d88P 888  888 Y8b.     Y88b.    888 "88b 
+::888        888     "Y88P"  888    888 888  "Y8888        "Y8888P"  888  888  "Y8888   "Y8888P 888  888 
 
 :recheck_launcher_profiles
 REM Make sure it exists
@@ -871,44 +904,25 @@ title %title_installing%
     goto input_loop
 )
 
-::888     888          d8b                  
-::888     888          Y8P                  
-::888     888                               
-::Y88b   d88P  .d88b.  888  .d8888b .d88b.  
-:: Y88b d88P  d88""88b 888 d88P"   d8P  Y8b 
-::  Y88o88P   888  888 888 888     88888888 
-::   Y888P    Y88..88P 888 Y88b.   Y8b.     
-::    Y8P      "Y88P"  888  "Y8888P "Y8888  
-
-::REM ask if the user will be unable to use Simple Voice Chat
-::title %title_prompt%
-::echo Please ignore this [Enter] if you don't know what this means.
-::set /p "uninstall_confirm=Do you need to disable SVC? ([y]es / no [Enter]): "
-::title %title_normal%
-::    REM If the user input is 'y' or 'yes', uninstall
-::    echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
-::        echo.
-::        echo Use the command [/dvc start] in-game.
-::        set "dvc=true"
-::        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
-::    ) || (
-::        echo.
-::        echo Continuing...
-::        set "dvc=false"
-::        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
-::)
+REM detour to Distant Horizons LOD download
+if "%existing_install%"=="false" (
+    goto dh_start
+)
+if "%startup_selection%"=="2" (
+    goto dh_start
+)
 
 :update_start
 title %title_installing%
 
-::8888888b.                   .d888 d8b 888          
-::888   Y88b                 d88P"  Y8P 888          
-::888    888                 888        888          
-::888   d88P 888d888 .d88b.  888888 888 888  .d88b.  
-::8888888P"  888P"  d88""88b 888    888 888 d8P  Y8b 
-::888        888    888  888 888    888 888 88888888 
-::888        888    Y88..88P 888    888 888 Y8b.     
-::888        888     "Y88P"  888    888 888  "Y8888  
+::8888888b.                   .d888 d8b 888                .d8888b.           888    
+::888   Y88b                 d88P"  Y8P 888               d88P  Y88b          888    
+::888    888                 888        888               Y88b.               888    
+::888   d88P 888d888 .d88b.  888888 888 888  .d88b.        "Y888b.    .d88b.  888888 
+::8888888P"  888P"  d88""88b 888    888 888 d8P  Y8b          "Y88b. d8P  Y8b 888    
+::888        888    888  888 888    888 888 88888888            "888 88888888 888    
+::888        888    Y88..88P 888    888 888 Y8b.          Y88b  d88P Y8b.     Y88b.  
+::888        888     "Y88P"  888    888 888  "Y8888        "Y8888P"   "Y8888   "Y888 
 
 set "AU2SB_created_date=1999-03-20T00:00:00.002Z"
 set "AU2SB_icon=data:image/png;base64,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"
