@@ -225,7 +225,7 @@ title %title_normal%
     echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
         goto skip_prompt
     ) || (
-        echo.
+        echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
         goto start
     )
 )
@@ -361,7 +361,7 @@ pause >nul
 echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 goto start
     ) || (
-        echo.
+        echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
         goto start
     )
 )
@@ -952,7 +952,7 @@ echo        AU2SB successfully moved!exclaim!
 title %title_finished%
 echo Press any key to return to the Options...
 pause >nul
-echo.
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
 goto start
 )
 
