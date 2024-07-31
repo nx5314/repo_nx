@@ -34,11 +34,10 @@ if %os_build% LSS 16299 (
     exit
 )
 
-REM Check updater version
-for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
-
-REM check if curl works -_-
-if "%latest_updater_version%"=="" (
+REM check if we can connect to github via curl
+set "ERRORLEVEL="
+curl -s -L --head https://www.quad9.net | find "200 OK" >nul
+if %ERRORLEVEL% neq 0 (
 title %title_failed%
 echo.
 echo.               .d88 
@@ -50,11 +49,14 @@ echo.        d8b  Y88b
 echo.        Y8P   Y88b. 
 echo.               'Y88 
 echo.
-echo        It looks like your Windows installation is somehow messed up, the curl.exe is not functioning or is missing.
+echo        It looks like your Windows installation is somehow messed up.
+echo        Default Windows component curl.exe is not functioning or is missing.
 echo        Why have you done this.
 pause
 exit
 )
+REM check if winget works
+set "ERRORLEVEL="
 winget >nul 2>&1
 if %errorlevel% neq 0 (
 title %title_failed%
@@ -69,10 +71,32 @@ echo.        Y8P   Y88b.
 echo.               'Y88 
 echo.
 echo        Winget is not installed or not found in your environment variables.
-echo        Please download and install from: https://aka.ms/getwinget
+echo        Please download and install Winget from: https://aka.ms/getwinget
 pause
 exit
 )
+set "ERRORLEVEL="
+winget source update >nul 2>&1
+if %errorlevel% neq 0 (
+title %title_failed%
+echo.
+echo.               .d88 
+echo.        d8b   d88P' 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               'Y88 
+echo.
+echo        Winget sources failed to update.
+echo        Please download and reinstall Winget from: https://aka.ms/getwinget
+pause
+exit
+)
+
+REM Check updater version
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/updaterversion.txt') do set "latest_updater_version=%%i"
 set "updater_download_path=%cd%"
 REM Compare versions
 if not "%latest_updater_version%"=="%this_updater_version%" (
