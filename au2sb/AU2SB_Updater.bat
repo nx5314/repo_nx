@@ -223,7 +223,17 @@ set /p "uninstall_confirm=Please confirm to uninstall ([y]es / no [Enter]): "
 title %title_normal%
     REM If the user input is 'y' or 'yes', uninstall
     echo !uninstall_confirm! | findstr /I /C:"y" >nul && (
-        goto skip_prompt
+        title %title_prompt%
+        set /p "uninstall_zerotier=Would you like to also uninstall ZeroTier? ([y]es / no [Enter]): "
+        title %title_normal%
+            REM If the user input is 'y' or 'yes', uninstall zerotier
+            echo !uninstall_zerotier! | findstr /I /C:"y" >nul && (
+                set "uninstall_zerotier=true"
+                goto skip_prompt
+            ) || (
+                set "uninstall_zerotier=false"
+                goto skip_prompt
+            )
     ) || (
         echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
         goto start
@@ -592,6 +602,10 @@ if "%startup_selection%"=="3" (
     powershell -Command "(New-Object -ComObject 'Shell.Application').Namespace(10).MoveHere('%minecraft_au2sb_folder%')"
     rmdir %appdata%\.minecraft_au2sb /s /q 2>&1 >nul
     powershell -Command "$jsonFilePath = '%launcher_profiles%'; $jsonContent = Get-Content -Path $jsonFilePath | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Name -eq 'AU2SB' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path $jsonFilePath"
+set "ERRORLEVEL="
+    if "%uninstall_zerotier%"=="true" (
+        winget.exe uninstall --id ZeroTier.ZeroTierOne --exact
+    )
 echo. & echo. & echo.
 echo.               .d88 
 echo.        d8b   d88P' 
@@ -603,7 +617,14 @@ echo.        Y8P   Y88b.
 echo.               'Y88 
 echo. & echo.
 echo.        AU2SB has been uninstalled but is retrievable from the recycle bin until it is cleared.
-echo.        This script does not uninstall the Minecraft Launcher itself or any other software.
+if "%uninstall_zerotier%"=="true" (
+    if %ERRORLEVEL% neq 0 (
+echo.        ZeroTier uninstallation failed.
+    ) else (
+echo.        ZeroTier has also been uninstalled.
+    )
+)
+echo.        This script does not uninstall the Minecraft Launcher itself.
 title %title_finished%
 echo.
 echo Press any key to exit.
