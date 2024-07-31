@@ -58,7 +58,7 @@ exit
 REM check if winget works
 set "ERRORLEVEL="
 winget >nul 2>&1
-if %errorlevel% neq 0 (
+if %ERRORLEVEL% neq 0 (
 title %title_failed%
 echo.
 echo.               .d88 
@@ -77,7 +77,7 @@ exit
 )
 set "ERRORLEVEL="
 winget source update >nul 2>&1
-if %errorlevel% neq 0 (
+if %ERRORLEVEL% neq 0 (
 title %title_failed%
 echo.
 echo.               .d88 
