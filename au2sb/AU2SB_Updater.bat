@@ -29,7 +29,7 @@ REM Fetch OS version
 for /F "tokens=2 delims==" %%i in ('wmic os get Version /value') do set os_version=%%i
 for /F "tokens=3 delims=." %%a in ("%os_version%") do set os_build=%%a
 if %os_build% LSS 16299 (
-    echo WARNING: Your Windows version is not at least build 16299. Please update your OS.
+    echo WARNING: Your Windows version is not at least build 16299. Please update your OS. Like seriously.
     pause
     exit
 )
