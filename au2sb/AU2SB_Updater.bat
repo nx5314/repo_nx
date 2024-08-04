@@ -1486,8 +1486,23 @@ echo Press any key to exit.
 
 echo.
 if not exist "%minecraft_au2sb_folder%\zerotier_set" (
-ipconfig /all | findstr /C:"ZeroTier" && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo No ZeroTier network detected
-reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "ZeroTier" | findstr "DisplayName" >nul && echo ZeroTier is installed && echo. 2> "%minecraft_au2sb_folder%\zerotier_set" goto skip_zerotier || echo ZeroTier is not installed
+:: Check for ZeroTier network
+ipconfig /all | findstr /C:"ZeroTier" && (
+    echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+    goto skip_zerotier
+) || (
+    echo No ZeroTier network detected
+)
+
+:: Check if ZeroTier is installed
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "ZeroTier" | findstr "DisplayName" >nul && (
+    echo ZeroTier is installed
+    echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+    goto skip_zerotier
+) || (
+    echo ZeroTier is not installed
+)
+
 echo We use ZeroTier for our SD-WAN so it is required to play
 title %title_prompt%
     set /p "zerotier_prompt=Please confirm to install ZeroTier ([y]es / no [Enter]): "
