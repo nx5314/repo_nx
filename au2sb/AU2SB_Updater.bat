@@ -429,7 +429,18 @@ if exist "%temp%\au2sb_dh" rmdir "%temp%\au2sb_dh"
 if "%existing_install%"=="false" goto update_start
 if "%startup_selection%"=="2" goto update_start
 if "!fail_state!"=="true" (
-    echo.
+title %title_failed%
+echo.
+echo.               .d88 
+echo.        d8b   d88P' 
+echo.        Y8P  d88P   
+echo.             888    
+echo.             888    
+echo.        d8b  Y88b   
+echo.        Y8P   Y88b. 
+echo.               'Y88 
+echo.
+    echo Failed to download Distant Horizons LOG
     echo Press any key to return to the Options...
     pause >nul
     echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
