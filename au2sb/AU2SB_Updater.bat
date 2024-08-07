@@ -5,7 +5,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :start
-set "this_updater_version=1.5.1.3"
+set "this_updater_version=1.5.2"
 
 REM Title presets
 set "title_normal=AU2SB Updater %this_updater_version%"
@@ -118,10 +118,34 @@ REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
-if exist "%current_minecraft_au2sb_folder%\version" (
-set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\version"
-) else (
-    set "current_AU2SB_version="
+if defined %current_minecraft_au2sb_folder% (
+    if exist "%current_minecraft_au2sb_folder%\au2sb\version" (
+    set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\au2sb\version"
+    ) else (
+        set "current_AU2SB_version="
+    )
+    
+    if not exist "%current_minecraft_au2sb_folder%\au2sb" mkdir "%current_minecraft_au2sb_folder%\au2sb"
+    
+    REM move old items
+    if exist "%current_minecraft_au2sb_folder%\dh_date" (
+        move /y "%current_minecraft_au2sb_folder%\dh_date" "%current_minecraft_au2sb_folder%\au2sb\dh_date"
+    )
+    if exist "%current_minecraft_au2sb_folder%\dvc" (
+        move /y "%current_minecraft_au2sb_folder%\dvc" "%current_minecraft_au2sb_folder%\au2sb\dvc"
+    )
+    if exist "%current_minecraft_au2sb_folder%\keybinds_set" (
+        move /y "%current_minecraft_au2sb_folder%\keybinds_set" "%current_minecraft_au2sb_folder%\au2sb\keybinds_set"
+    )
+    if exist "%current_minecraft_au2sb_folder%\ram_alloc.txt" (
+        move /y "%current_minecraft_au2sb_folder%\ram_alloc.txt" "%current_minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
+    )
+    if exist "%current_minecraft_au2sb_folder%\version" (
+        move /y "%current_minecraft_au2sb_folder%\version" "%current_minecraft_au2sb_folder%\au2sb\version"
+    )
+    if exist "%current_minecraft_au2sb_folder%\zerotier_set" (
+        move /y "%current_minecraft_au2sb_folder%\zerotier_set" "%current_minecraft_au2sb_folder%\au2sb\zerotier_set"
+    )
 )
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
 REM Check AU2SB size
@@ -146,6 +170,31 @@ if not "%current_AU2SB_version%"=="" (
 
 REM Make folder
 if not exist "%appdata%\.minecraft_au2sb" mkdir "%appdata%\.minecraft_au2sb"
+
+REM pickup where we left off after a java installation
+if exist "%minecraft_au2sb_folder%\au2sb\java_continue" (
+    set "ERRORLEVEL="
+    where java >nul 2>&1
+    if !ERRORLEVEL! equ 0 (
+        echo Java is recognized
+    ) else (
+        echo ERROR: Java command is not recognized, something either went wrong or you need to restart your PC to continue.
+title %title_error%
+        echo Press any key to exit.
+        pause >nul
+        exit
+    )
+
+    del "%minecraft_au2sb_folder%\au2sb\java_continue" /s /q
+    if exist "%minecraft_au2sb_folder%\au2sb\java_continue_1" (
+        set "install_selection=1"
+        del "%minecraft_au2sb_folder%\au2sb\java_continue_1" /s /q
+    )
+    echo.
+    echo AU2SB Installer will now continue from where it left off...
+    @timeout /t 3 /nobreak >nul
+    goto kill_launcher
+)
 
 :intro
 REM Intro
@@ -215,7 +264,7 @@ echo.
         echo.
         echo Use the command [/dvc start] in-game and connect to the DVC channel in Discord.
         set "dvc=true"
-        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\dvc"
+        echo|set /p="!dvc!" > "%minecraft_au2sb_folder%\au2sb\dvc"
         echo Press any key to continue...
         pause >nul
         echo.
@@ -225,7 +274,7 @@ echo.
         echo.
         echo Unyeeten.
         set "dvc=false"
-        del "%minecraft_au2sb_folder%\dvc" /s /q
+        del "%minecraft_au2sb_folder%\au2sb\dvc" /s /q
         echo Press any key to continue...
         pause >nul
         echo.
@@ -283,8 +332,8 @@ goto path_prompt
 
 if "%startup_selection%"=="5" (
 :dh_start
-if exist "%current_minecraft_au2sb_folder%\dh_date" (
-set /p dh_date_prev=<"%current_minecraft_au2sb_folder%\dh_date"
+if exist "%current_minecraft_au2sb_folder%\au2sb\dh_date" (
+set /p dh_date_prev=<"%current_minecraft_au2sb_folder%\au2sb\dh_date"
 ) else (
     set "dh_date_prev="
 )
@@ -362,7 +411,7 @@ echo Moving Distant Horizons LOD to %current_minecraft_au2sb_folder%...
 robocopy "%temp%\au2sb_dh" "%current_minecraft_au2sb_folder%" /s /r:100 /move /xo /log:"%temp%\au2sb_config.log" 2>&1 >nul
 
 REM save date
-curl -s -L https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.txt --output "%current_minecraft_au2sb_folder%\dh_date"
+curl -s -L https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/dh_date.txt --output "%current_minecraft_au2sb_folder%\au2sb\dh_date"
 
 :dh_cleanup
 echo Cleaning up...
@@ -471,7 +520,33 @@ echo.           At least 8 GB of system RAM is required to play AU2SB.  Installi
 echo.        The install size will be at least %AU2SB_size% GB, if you don't have enough space you should feel
 echo.        bad about your computer organization.
 echo.
+:install_selection
+set "install_selection=47"
+echo    Options:
+echo         1. Express Install
+echo         2. Custom Install
+echo         0. Exit
+echo.
+title %title_prompt%
+set /p "install_selection=Select: "
+title %title_normal%
+if "!install_selection!"=="0" exit
+if "!install_selection!"=="1" (
+    if "%input_path%"=="" set "input_path=%appdata%\.minecraft_au2sb" >nul
+    goto skip_prompt
+)
+if "!install_selection!"=="2" (
+    goto path_prompt
+)
+if not "!install_selection!"=="1" if not "!install_selection!"=="2" (
+    echo Invalid selection.
+    echo.
+    goto intro
+)
+
 :path_prompt
+title %title_prompt%
+echo.
 echo.        Please input a folder path if you would like to use a custom folder location, or simply
 echo.        press [Enter] if you would like to use the default .minecraft_au2sb folder (recommended).
 title %title_prompt%
@@ -568,6 +643,7 @@ if not exist "%minecraft_au2sb_folder%" (
     goto fail_end
 ) else (
     echo The folder %minecraft_au2sb_folder% exists and you have access to it.
+    if not exist "%minecraft_au2sb_folder%\au2sb" mkdir "%minecraft_au2sb_folder%\au2sb"
 )
 
 :: .d8888b.  888                        888                                      
@@ -826,6 +902,7 @@ REM If java needs to be installed
 set proceed_with_java_install=null
 if "%need_java%"=="true" (
     echo.
+    if "%install_selection%"=="1" goto winget_java
     set "install_java=null"
 title %title_prompt%
     set /p "install_java=Would you like to install Java? ([y]es / no [Enter] = skip, fabric will not be installed): "
@@ -836,10 +913,23 @@ REM If the user input contains 'y' or 'Y', set the proceed variable to true
 echo %install_java% | findstr /I /C:"y" >nul && (set "proceed_with_java_install=true") || (set "proceed_with_java_install=false")
 REM If proceed_with_java_install is true, install java
 if "%proceed_with_java_install%"=="true" (
+    :winget_java
     echo Java will now be installed
 title %title_installing%
+    set "ERRORLEVEL="
     winget.exe install --id EclipseAdoptium.Temurin.21.JRE --exact
-    echo Java should now be installed, please exit this terminal window and run this installer again to finish installing AU2SB
+    if !ERRORLEVEL! equ 0 (
+        echo Java installation succeeded, please exit this terminal window and run this installer again to finish installing AU2SB
+    ) else (
+        title %title_failed%
+        echo WARNING: Java installation failed
+        set "fail_state=true"
+        goto cleanup
+    )
+    echo. 2> "%minecraft_au2sb_folder%\au2sb\java_continue"
+    if "%install_selection%"=="1" (
+        echo. 2> "%minecraft_au2sb_folder%\au2sb\java_continue_1"
+    )
 title %title_stopped%
     echo Press any key to exit.
     pause >nul
@@ -868,15 +958,15 @@ title %title_installing%
 
 REM Set RAM allocation amount
 set "RAM_unset=false"
-if not exist "%minecraft_au2sb_folder%\ram_alloc.txt" (
-    echo|set /p="6" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+if not exist "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt" (
+    echo|set /p="6" > "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
     set "RAM_allocation=6"
     set "RAM_unset=true"
 )
 
 REM Warn the user if RAM capacity is less than certain values on first run
 if %user_RAM_GB% lss 8 if "%RAM_unset%"=="true" (
-    echo|set /p="5" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo|set /p="5" > "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
     set "RAM_allocation=5"
     echo.
     echo Warning: Your system has less than 8 GB of RAM.  Performance may be negatively impacted.
@@ -898,11 +988,17 @@ title %title_installing%
         goto input_loop
     )
 )
-set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
+set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
 
 REM skip prompt if startup_selection 1
-if "%startup_selection%"=="1" if "%RAM_unset%"=="false" (
-    goto update_start
+if "%startup_selection%"=="1" if "%RAM_unset%"=="false" goto update_start
+REM skip prompt if install_selection 1
+if "%install_selection%"=="1" (
+    set "RAM_unset=false"
+    set "RAM_allocation=6"
+    if %user_RAM_GB% lss 8 (
+        set "RAM_allocation=5"
+    )
 )
 
 REM Warn the user if RAM capacity is less than certain values on subsequent runs
@@ -943,7 +1039,7 @@ if "%RAM_unset%"=="true" (
 title %title_installing%
 
 if not defined RAM_allocation (
-    set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\ram_alloc.txt"
+    set /p "RAM_allocation=" < "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
 )
 REM Trim leading and trailing spaces
 for /f "tokens=* delims= " %%a in ("!RAM_allocation!") do set "RAM_allocation=%%~a"
@@ -958,7 +1054,7 @@ title %title_prompt%
         echo !proceed! | findstr /I /C:"y" >nul || goto input_loop
     )
 title %title_installing%
-    echo|set /p="!RAM_allocation!" > "%minecraft_au2sb_folder%\ram_alloc.txt"
+    echo|set /p="!RAM_allocation!" > "%minecraft_au2sb_folder%\au2sb\ram_alloc.txt"
     echo You have allocated !RAM_allocation! GB of RAM.
 ) else (
     echo Invalid input. Please enter a number between 4 and %user_RAM_max%.
@@ -1019,18 +1115,21 @@ if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
 ::888   "   888 Y88..88P Y88b 888      X88 
 ::888       888  "Y88P"   "Y88888  88888P' 
 
-REM Check if AU2SBmodsversion exists
+REM Check if mods_version exists
 set "is_update=false"
 set "mods_uptodate=false"
 if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
-    for /f %%A in ("%minecraft_au2sb_folder%\AU2SBmodsversion") do (
+    del "%minecraft_au2sb_folder%\AU2SBmodsversion" /s /q
+)
+if exist "%minecraft_au2sb_folder%\au2sb\mods_version" (
+    for /f %%A in ("%minecraft_au2sb_folder%\au2sb\mods_version") do (
         if %%~zA equ 0 (
             echo The mods version file appears empty? How did that even happen?
             REM Handle the empty file case here
-            (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
+            (echo %mods_url% > "%minecraft_au2sb_folder%\au2sb\mods_version")
         ) else (
             REM Read the contents of the file
-            for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\AU2SBmodsversion"') do (set "current_mods_url=%%i")
+            for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\au2sb\mods_version"') do (set "current_mods_url=%%i")
             set "current_mods_url=!current_mods_url:~0,-1!"
             if not exist "%minecraft_au2sb_folder%\mods" (
                 set "mods_uptodate=false"
@@ -1048,7 +1147,7 @@ if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
     )
 ) else (
     REM If the file does not exist, create it and set the contents to mods_url
-    (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
+    (echo %mods_url% > "%minecraft_au2sb_folder%\au2sb\mods_version")
 )
 
 REM Compare the contents of the file with mods_url
@@ -1059,7 +1158,7 @@ if "!current_mods_url!"=="!mods_url!" (
 ) else (
     REM If they are not the same, update the file with the new mods_url
     REM Mods up-to-date = !mods_uptodate!
-    (echo %mods_url% > "%minecraft_au2sb_folder%\AU2SBmodsversion")
+    (echo %mods_url% > "%minecraft_au2sb_folder%\au2sb\mods_version")
 )
 
 REM If mods are up to date offer for user override
@@ -1139,17 +1238,20 @@ robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move
 ::                                                                      888                                          
 ::                                                                      888                                          
 
-REM Check if AU2SBresourcepacksversion exists
+REM Check if resourcepacks_version exists
 set "resourcepacks_uptodate=false"
 if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
-    for /f %%A in ("%minecraft_au2sb_folder%\AU2SBresourcepacksversion") do (
+    del "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" /s /q
+)
+if exist "%minecraft_au2sb_folder%\au2sb\resourcepacks_version" (
+    for /f %%A in ("%minecraft_au2sb_folder%\au2sb\resourcepacks_version") do (
         if %%~zA equ 0 (
             echo The resourcepacks version file appears empty? How did that even happen?
             REM Handle the empty file case here
-            (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
+            (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\au2sb\resourcepacks_version")
         ) else (
             REM Read the contents of the file
-            for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\AU2SBresourcepacksversion"') do (set "current_resourcepacks_url=%%i")
+            for /f "delims=" %%i in ('type "%minecraft_au2sb_folder%\au2sb\resourcepacks_version"') do (set "current_resourcepacks_url=%%i")
             set "current_resourcepacks_url=!current_resourcepacks_url:~0,-1!"
             if not exist "%minecraft_au2sb_folder%\resourcepacks" (
                 set "resourcepacks_uptodate=false"
@@ -1165,7 +1267,7 @@ if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
     )
 ) else (
     REM If the file does not exist, create it and set the contents to resourcepacks_url
-    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
+    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\au2sb\resourcepacks_version")
 )
 
 REM Compare the contents of the file with resourcepacks_url
@@ -1173,7 +1275,7 @@ if "!current_resourcepacks_url!"=="!resourcepacks_url!" (
     set "resourcepacks_uptodate=true"
 ) else (
     REM If they are not the same, update the file with the new resourcepacks_url
-    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\AU2SBresourcepacksversion")
+    (echo %resourcepacks_url% > "%minecraft_au2sb_folder%\au2sb\resourcepacks_version")
 )
 
 REM If resourcepacks are up to date offer for user override
@@ -1415,10 +1517,10 @@ for /f "delims=" %%i in (%optionsfile%) do (
 move /Y "%optionsfiletemp%" "%optionsfile%" >nul
 
 REM Replace the options.txt keybindings with custom defaults if not previously done, powershell is easier for this bulk operation
-if not exist "%minecraft_au2sb_folder%\keybinds_set" (
+if not exist "%minecraft_au2sb_folder%\au2sb\keybinds_set" (
     powershell -Command "$keybinds = @{}; (Get-Content '%minecraft_au2sb_folder%\defaultkeybinds.txt') | ForEach-Object { $key = ($_ -split ':')[0]; $keybinds[$key] = $_ }; $newContent = (Get-Content '%minecraft_au2sb_folder%\options.txt') | ForEach-Object { if ($_ -match '^key_') { $key = ($_ -split ':')[0]; if ($keybinds.ContainsKey($key)) { $keybinds[$key] } else { $_ } } else { $_ } }; $keybinds.Keys | ForEach-Object { if ($keybinds[$_]) { $newContent += $keybinds[$_] } }; $newContent | Out-File -FilePath '%minecraft_au2sb_folder%\options.txt' -Encoding utf8"
 
-    echo. 2> "%minecraft_au2sb_folder%\keybinds_set"
+    echo. 2> "%minecraft_au2sb_folder%\au2sb\keybinds_set"
 )
 
 :: .d8888b.  888                                              
@@ -1448,8 +1550,8 @@ del "%temp%\au2sb_extras.zip" /q 2>&1 >nul
 rmdir "%temp%\au2sb" /s /q
 
 REM delete voicechat if dvc true
-if exist "%minecraft_au2sb_folder%\dvc" (
-set /p dvc=<"%minecraft_au2sb_folder%\dvc"
+if exist "%minecraft_au2sb_folder%\au2sb\dvc" (
+set /p dvc=<"%minecraft_au2sb_folder%\au2sb\dvc"
 )
 if "%dvc%"=="true" (
     del "%minecraft_au2sb_folder%\mods\voicechat-fabric-*.jar" /s /q
@@ -1485,24 +1587,22 @@ echo Press any key to exit.
 ::d8888888888 "Y8888  888     "Y88P"   "Y888 888  "Y8888  888     
 
 echo.
-if not exist "%minecraft_au2sb_folder%\zerotier_set" (
+if not exist "%minecraft_au2sb_folder%\au2sb\zerotier_set" (
 :: Check for ZeroTier network
-ipconfig /all | findstr /C:"ZeroTier" && (
-    echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+ipconfig /all | findstr /C:"ZeroTier" >nul 2>&1 && (
+    echo. 2> "%minecraft_au2sb_folder%\au2sb\zerotier_set"
     goto skip_zerotier
 ) || (
     echo No ZeroTier network detected
 )
-
 :: Check if ZeroTier is installed
 reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" /s /f "ZeroTier" | findstr "DisplayName" >nul && (
     echo ZeroTier is installed
-    echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+    echo. 2> "%minecraft_au2sb_folder%\au2sb\zerotier_set"
     goto skip_zerotier
 ) || (
     echo ZeroTier is not installed
 )
-
 echo We use ZeroTier for our SD-WAN so it is required to play
 title %title_prompt%
     set /p "zerotier_prompt=Please confirm to install ZeroTier ([y]es / no [Enter]): "
@@ -1513,8 +1613,8 @@ title %title_prompt%
             set "zerotier_note=true"
             echo Installing ZeroTier now...
             winget.exe install --id ZeroTier.ZeroTierOne --exact
-            REM Create file at "%minecraft_au2sb_folder%\zerotier_set" after ZeroTier is installed
-            echo. 2> "%minecraft_au2sb_folder%\zerotier_set"
+            REM Create file at "%minecraft_au2sb_folder%\au2sb\zerotier_set" after ZeroTier is installed
+            echo. 2> "%minecraft_au2sb_folder%\au2sb\zerotier_set"
         ) || (
             set "zerotier_note=true"
             echo Please ensure ZeroTier is installed and configured before attempting to play AU2SB.
@@ -1522,7 +1622,7 @@ title %title_prompt%
 )
 :skip_zerotier
 
-echo.|set /p="%latest_AU2SB_version%" > "%minecraft_au2sb_folder%\version"
+echo.|set /p="%latest_AU2SB_version%" > "%minecraft_au2sb_folder%\au2sb\version"
 
 title %title_finished%
 echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
