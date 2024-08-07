@@ -122,10 +122,10 @@ if not "%current_minecraft_au2sb_folder%"=="" (
     if not exist "%current_minecraft_au2sb_folder%\au2sb" mkdir "%current_minecraft_au2sb_folder%\au2sb"
     
     REM move old items
-    if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
+    if exist "%current_minecraft_au2sb_folder%\AU2SBmodsversion" (
         move /y "%minecraft_au2sb_folder%\AU2SBmodsversion" "%current_minecraft_au2sb_folder%\au2sb\mods_version"
     )
-    if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
+    if exist "%current_minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
         move /y "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" "%minecraft_au2sb_folder%\au2sb\resourcepacks_version"
     )
     if exist "%current_minecraft_au2sb_folder%\dh_date" (
