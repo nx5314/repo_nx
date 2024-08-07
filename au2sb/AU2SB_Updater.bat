@@ -118,13 +118,7 @@ REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
-if defined %current_minecraft_au2sb_folder% (
-    if exist "%current_minecraft_au2sb_folder%\au2sb\version" (
-    set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\au2sb\version"
-    ) else (
-        set "current_AU2SB_version="
-    )
-    
+if defined %current_minecraft_au2sb_folder% (    
     if not exist "%current_minecraft_au2sb_folder%\au2sb" mkdir "%current_minecraft_au2sb_folder%\au2sb"
     
     REM move old items
@@ -145,6 +139,12 @@ if defined %current_minecraft_au2sb_folder% (
     )
     if exist "%current_minecraft_au2sb_folder%\zerotier_set" (
         move /y "%current_minecraft_au2sb_folder%\zerotier_set" "%current_minecraft_au2sb_folder%\au2sb\zerotier_set"
+    )
+
+    if exist "%current_minecraft_au2sb_folder%\au2sb\version" (
+    set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\au2sb\version"
+    ) else (
+        set "current_AU2SB_version="
     )
 )
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
