@@ -541,7 +541,7 @@ set /p "install_selection=Select: "
 title %title_normal%
 if "!install_selection!"=="0" exit
 if "!install_selection!"=="1" (
-    if "%input_path%"=="" set "input_path=%appdata%\.minecraft_au2sb" >nul
+    set "input_path=%appdata%\.minecraft_au2sb"
     goto skip_prompt
 )
 if "!install_selection!"=="2" (
@@ -562,7 +562,7 @@ title %title_prompt%
 set "input_path="
 set /p "input_path=Path: "
 title %title_normal%
-if "%input_path%"=="" set "input_path=%appdata%\.minecraft_au2sb" >nul
+if "%input_path%"=="" set "input_path=%appdata%\.minecraft_au2sb"
 
 REM Remove trailing slash if it exists and clear quotation marks
 if "%input_path:~-1%"=="\" set "input_path=%input_path:~0,-1%"
