@@ -120,7 +120,7 @@ set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
 if not "%current_minecraft_au2sb_folder%"=="" (
     if not exist "%current_minecraft_au2sb_folder%\au2sb" mkdir "%current_minecraft_au2sb_folder%\au2sb"
-    
+
     REM move old items
     if exist "%current_minecraft_au2sb_folder%\AU2SBmodsversion" (
         move /y "%current_minecraft_au2sb_folder%\AU2SBmodsversion" "%current_minecraft_au2sb_folder%\au2sb\mods_version"
@@ -147,6 +147,7 @@ if not "%current_minecraft_au2sb_folder%"=="" (
         move /y "%current_minecraft_au2sb_folder%\zerotier_set" "%current_minecraft_au2sb_folder%\au2sb\zerotier_set"
     )
 
+    REM version check
     if exist "%current_minecraft_au2sb_folder%\au2sb\version" (
     set /p current_AU2SB_version=<"%current_minecraft_au2sb_folder%\au2sb\version"
     ) else (
