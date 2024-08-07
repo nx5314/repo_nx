@@ -215,7 +215,7 @@ title %title_error%
     echo.
     echo AU2SB Installer will now continue from where it left off...
     @timeout /t 3 /nobreak >nul
-    goto kill_launcher
+    goto skip_prompt
 )
 
 :intro
