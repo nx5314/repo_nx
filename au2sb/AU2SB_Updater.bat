@@ -72,7 +72,8 @@ echo.        d8b  Y88b
 echo.        Y8P   Y88b. 
 echo.               'Y88 
 echo.
-echo        It looks like your Windows installation is somehow messed up.
+echo        No internet connection?
+echo        That or it looks like your Windows installation is somehow messed up.
 echo        Default Windows component curl.exe is not functioning or is missing.
 echo        Why have you done this.
 pause
