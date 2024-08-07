@@ -1098,7 +1098,18 @@ REM new AU2SB profile entry
 powershell -Command "$newAU2SBProfile = @{ 'created' = '%AU2SB_created_date%'; 'gameDir' = '%minecraft_au2sb_folder%'; 'icon' = '%AU2SB_icon%'; 'javaArgs' = '-Xmx%RAM_allocation%G -Xms%RAM_allocation%G -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+UseNUMA -XX:NmethodSweepActivity=1 -XX:ReservedCodeCacheSize=400M -XX:NonNMethodCodeHeapSize=12M -XX:ProfiledCodeHeapSize=194M -XX:NonProfiledCodeHeapSize=194M -XX:-DontCompileHugeMethods -XX:MaxNodeLimit=240000 -XX:NodeLimitFudgeFactor=8000 -XX:+UseVectorCmov -XX:+PerfDisableSharedMem -XX:+UseFastUnorderedTimeStamps -XX:+UseCriticalJavaThreadPriority -XX:ThreadPriorityPolicy=1 -XX:AllocatePrefetchStyle=3  -XX:+UseG1GC -XX:MaxGCPauseMillis=37 -XX:+PerfDisableSharedMem -XX:G1HeapRegionSize=16M -XX:G1NewSizePercent=23 -XX:G1ReservePercent=20 -XX:SurvivorRatio=32 -XX:G1MixedGCCountTarget=3 -XX:G1HeapWastePercent=20 -XX:InitiatingHeapOccupancyPercent=10 -XX:G1RSetUpdatingPauseTimePercent=0 -XX:MaxTenuringThreshold=1 -XX:G1SATBBufferEnqueueingThresholdPercent=30 -XX:G1ConcMarkStepDurationMillis=5.0 -XX:G1ConcRSHotCardLimit=16 -XX:G1ConcRefinementServiceIntervalMillis=150 -XX:GCTimeRatio=99'; 'lastUsed' = '2063-04-05T00:00:00.002Z'; 'lastVersionId' = 'fabric-loader-0.15.11-1.20.1'; 'name' = 'AU2SB%profile_suffix%'; 'type' = 'custom' }; $jsonContent = Get-Content -Path '%launcher_profiles%' | ConvertFrom-Json; $jsonContent.profiles.PSObject.Properties | Where-Object { $_.Value.created -eq '%AU2SB_created_date%' } | ForEach-Object { $jsonContent.profiles.PSObject.Properties.Remove($_.Name) }; $jsonContent.profiles | Add-Member -MemberType NoteProperty -Name 'AU2SB' -Value $newAU2SBProfile -Force; $jsonContent | ConvertTo-Json -Depth 32 | Set-Content -Path '%launcher_profiles%'"
 
 if "%startup_selection%"=="4" (
-echo        AU2SB successfully moved!exclaim!
+echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo. & echo.
+echo.       BTTTTTTTTTTjBPTTTTBPTTTTB #TTTTjBPTTTTBPTTTTTTTTTT#KTTTT#BTTTTjBTTTTTTTTTTjBPTTTTTTTTjggPTTTT#
+echo.      jK    ,,,,,,/B    jB     P#B    jB     BP    ,,,,,,#K    jB    jB     ,,,,,;BP    ,,    jB    jK
+echo.      B     BBBBBBBK    /B      #K    jB    jB'    BBBBBBBK    jB    -B'    BBBBBBBb    jB    -B     B
+echo.     jK           BM    BK    zg      jB    jB           jB           BP          jB     BP    #K    jk
+echo.     #'    BBBBBBBB     BM    BK,     BK    jBBBBBBBP    jB    jB'    BK    jBBBBBBBW    #K    jBPPPPPB
+echo.    jP    jBBBBBBBK    jB     BBB     BK    jB           jB    jB-    #b           BK           Bk    jC
+echo.    #WgggggBBBPTTtWgggggBgggggBBBgggggBkgggggBggggggggggggBgggggBkgggggBggggggggggggBggggggggggBBBgggggB
+echo.     TBBBBBBBB    jBBBBBBBBBBBBBhBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBP
+echo.      '#BBBBBK     jBBBBBBBBBBBB #BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCjBBBBBB-
+echo.
+echo                                           AU2SB successfully moved!exclaim!
 title %title_finished%
 echo Press any key to return to the Options...
 pause >nul
