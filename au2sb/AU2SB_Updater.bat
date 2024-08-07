@@ -118,10 +118,16 @@ REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
 )
-if defined %current_minecraft_au2sb_folder% (    
+if not "%current_minecraft_au2sb_folder%"=="" (
     if not exist "%current_minecraft_au2sb_folder%\au2sb" mkdir "%current_minecraft_au2sb_folder%\au2sb"
     
     REM move old items
+    if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
+        move /y "%minecraft_au2sb_folder%\AU2SBmodsversion" "%current_minecraft_au2sb_folder%\au2sb\mods_version"
+    )
+    if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
+        move /y "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" "%minecraft_au2sb_folder%\au2sb\resourcepacks_version"
+    )
     if exist "%current_minecraft_au2sb_folder%\dh_date" (
         move /y "%current_minecraft_au2sb_folder%\dh_date" "%current_minecraft_au2sb_folder%\au2sb\dh_date"
     )
@@ -1118,9 +1124,6 @@ if not exist "%temp%\au2sb" mkdir "%temp%\au2sb"
 REM Check if mods_version exists
 set "is_update=false"
 set "mods_uptodate=false"
-if exist "%minecraft_au2sb_folder%\AU2SBmodsversion" (
-    del "%minecraft_au2sb_folder%\AU2SBmodsversion" /s /q
-)
 if exist "%minecraft_au2sb_folder%\au2sb\mods_version" (
     for /f %%A in ("%minecraft_au2sb_folder%\au2sb\mods_version") do (
         if %%~zA equ 0 (
@@ -1240,9 +1243,6 @@ robocopy "%temp%\au2sb\config" "%minecraft_au2sb_folder%\config" /s /r:100 /move
 
 REM Check if resourcepacks_version exists
 set "resourcepacks_uptodate=false"
-if exist "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" (
-    del "%minecraft_au2sb_folder%\AU2SBresourcepacksversion" /s /q
-)
 if exist "%minecraft_au2sb_folder%\au2sb\resourcepacks_version" (
     for /f %%A in ("%minecraft_au2sb_folder%\au2sb\resourcepacks_version") do (
         if %%~zA equ 0 (
