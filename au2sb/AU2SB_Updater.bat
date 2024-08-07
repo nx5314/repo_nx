@@ -33,6 +33,29 @@ if %os_build% LSS 16299 (
     pause
     exit
 )
+REM Fetch system RAM capacity
+for /F "tokens=2 delims=:" %%a in ('systeminfo ^| findstr /C:"Total Physical Memory"') do set user_RAM=%%a
+set user_RAM=%user_RAM:~1,-3%
+set user_RAM=%user_RAM:MB=%
+set user_RAM=%user_RAM:,=%
+set /A user_RAM_GB=%user_RAM%/1024
+REM user_RAM_max caps the user to 90% of their total RAM
+set /A user_RAM_max=9*user_RAM_GB/10
+REM echo RAM in GB: %user_RAM_GB%
+
+REM Cancel the install if the system has less than 7 GB of RAM.  I'm doing this early so nothing gets installed if this is the case.  Using 7 just in case the values are odd, but still much less than 8.
+if %user_RAM_GB% lss 7 (
+    echo.
+    echo.
+echo        Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
+echo        impossible, if not highly inadvisable.  Please upgrade your system to play.
+echo        Or maybe it would work, I don't know, probably not though.  Doubt anyone will see this anyway.
+echo        I really hope.  For your sake.
+echo        If this appeared erroneously, let me know.
+title %title_stopped%
+    pause
+    exit
+)
 
 REM check if we can connect to github via curl
 set "ERRORLEVEL="
@@ -114,6 +137,11 @@ if not "%latest_updater_version%"=="%this_updater_version%" (
 	pause
 	exit
 )
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
+REM Check AU2SB size
+for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
+
+
 REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
@@ -154,19 +182,6 @@ if not "%current_minecraft_au2sb_folder%"=="" (
         set "current_AU2SB_version="
     )
 )
-for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/version.txt') do set "latest_AU2SB_version=%%i"
-REM Check AU2SB size
-for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
-
-REM Fetch system RAM capacity
-for /F "tokens=2 delims=:" %%a in ('systeminfo ^| findstr /C:"Total Physical Memory"') do set user_RAM=%%a
-set user_RAM=%user_RAM:~1,-3%
-set user_RAM=%user_RAM:MB=%
-set user_RAM=%user_RAM:,=%
-set /A user_RAM_GB=%user_RAM%/1024
-REM user_RAM_max caps the user to 90% of their total RAM
-set /A user_RAM_max=9*user_RAM_GB/10
-REM echo RAM in GB: %user_RAM_GB%
 
 REM version determines existing_install
 if not "%current_AU2SB_version%"=="" (
@@ -225,19 +240,6 @@ echo                                        The latest version of AU2SB is %late
 echo                                         Your AU2SB installation is up-to-date.
 )
 echo.
-
-REM Cancel the install if the system has less than 7 GB of RAM.  I'm doing this early so nothing gets installed if this is the case.  Using 7 just in case the values are odd, but still much less than 8.
-if %user_RAM_GB% lss 7 (
-    echo.
-    echo.
-echo        Your system appears to have less than 6 GB of RAM.  Unfortunately, running AU2SB is likely
-echo        impossible, if not highly inadvisable.  Please upgrade your system to play.
-echo        Or maybe it would work, I don't know, probably not though.  Doubt anyone will see this anyway.
-echo        I really hope.  For your sake.
-title %title_stopped%
-    pause
-    exit
-)
 
 :: .d88888b.           888    d8b                            
 ::d88P" "Y88b          888    Y8P                            
