@@ -238,6 +238,7 @@ echo                                      Your current version of AU2SB is %curr
 if not "%current_AU2SB_version%"=="%latest_AU2SB_version%" (
 echo                                        The latest version of AU2SB is %latest_AU2SB_version%
 ) else (
+echo.
 echo                                         Your AU2SB installation is up-to-date.
 )
 echo.
