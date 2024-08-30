@@ -142,7 +142,6 @@ for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_
 REM Check AU2SB size
 for /f "delims=" %%i in ('curl -s https://raw.githubusercontent.com/nx5314/repo_nx/main/au2sb/size.txt') do set "AU2SB_size=%%i"
 
-
 REM Check AU2SB path and version
 if exist "%appdata%\.minecraft_au2sb\path" (
 set /p current_minecraft_au2sb_folder=<"%appdata%\.minecraft_au2sb\path"
@@ -635,7 +634,6 @@ for /f %%A in ('dir /b "%input_path%\*"') do (
         goto path_prompt
     )
 )
-
 
 set "minecraft_au2sb_folder=%input_path%"
 
